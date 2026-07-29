@@ -26,3 +26,10 @@ def get_regular_season_games() -> pd.DataFrame:
     Load the raw NCAA men's regular season games.
     """
     return pd.read_csv(DATA_DIR / "MRegularSeasonCompactResults.csv")    
+
+
+def get_tournament_games() -> pd.DataFrame:
+    """
+    Load the raw NCAA men's tournament games.
+    """
+    return pd.read_csv(DATA_DIR / "MNCAATourneyCompactResults.csv")
