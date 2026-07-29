@@ -29,26 +29,32 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-8 md:p-24 relative overflow-hidden">
+    <main className="flex min-h-screen flex-col items-center p-6 md:p-12 pt-6 md:pt-10 relative overflow-hidden">
       <div className="z-10 max-w-4xl w-full flex flex-col items-center">
-        
-        <div className="chalk-border p-6 md:p-12 text-center w-full mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold chalk-text mb-4 uppercase tracking-wider">
-            NCAA Match Predictor
+
+        {/* Logo Header */}
+        <div className="chalk-border px-8 py-6 md:py-8 text-center w-full mb-8">
+          <h1 className="text-3xl md:text-5xl font-bold chalk-text uppercase tracking-wider flex items-center justify-center flex-wrap gap-2">
+            <span>NCAA MARCH</span>
+            <span className="text-xl md:text-2xl opacity-80 font-normal italic lowercase border-b-2 border-white/40 px-2 py-0.5 my-1 bg-white/5 rounded">
+              not so
+            </span>
+            <span>MADNESS</span>
           </h1>
-          <p className="text-xl md:text-2xl chalk-text opacity-90 italic">
-            &quot;March Not-So-Madness&quot; Baseline Demo
+          <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-2">
+            Match Predictor
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8 w-full justify-between items-end mb-12">
+        {/* Team Selectors */}
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full justify-between items-end mb-8">
           {/* Team 1 Selector */}
           <div className="flex flex-col flex-1 w-full gap-2">
-            <label className="text-2xl chalk-text ml-2">Home Team</label>
+            <label className="text-xl chalk-text ml-1 font-semibold">Home Team</label>
             <select
               value={team1Id}
               onChange={(e) => setTeam1Id(e.target.value)}
-              className="chalk-input p-4 text-xl w-full"
+              className="chalk-input p-3.5 text-lg w-full"
             >
               <option value="" disabled className="text-gray-900 bg-gray-200">Select Team...</option>
               {teamsData.map((team) => (
@@ -59,17 +65,17 @@ export default function Home() {
             </select>
           </div>
 
-          <div className="hidden md:flex pb-4 text-4xl chalk-text px-4 items-center justify-center opacity-80">
-            <Swords size={48} />
+          <div className="hidden md:flex pb-3 text-3xl chalk-text px-2 items-center justify-center opacity-80">
+            <Swords size={38} />
           </div>
 
           {/* Team 2 Selector */}
           <div className="flex flex-col flex-1 w-full gap-2">
-            <label className="text-2xl chalk-text ml-2">Away Team</label>
+            <label className="text-xl chalk-text ml-1 font-semibold">Away Team</label>
             <select
               value={team2Id}
               onChange={(e) => setTeam2Id(e.target.value)}
-              className="chalk-input p-4 text-xl w-full"
+              className="chalk-input p-3.5 text-lg w-full"
             >
               <option value="" disabled className="text-gray-900 bg-gray-200">Select Team...</option>
               {teamsData.map((team) => (
@@ -83,32 +89,71 @@ export default function Home() {
 
         <button
           onClick={handlePredict}
-          className="chalk-button px-10 py-4 text-2xl font-bold flex items-center gap-3 mb-12"
+          className="chalk-button px-9 py-3.5 text-xl font-bold flex items-center gap-3 mb-8 shadow-lg"
         >
-          <Calculator size={32} />
+          <Calculator size={28} />
           PREDICT MATCHUP
         </button>
 
+        {/* Prediction Results Component */}
         {prediction && (
-          <div className="chalk-border p-8 w-full max-w-2xl bg-black/10 animate-fade-in relative mt-4">
-            <h2 className="text-4xl text-center chalk-text mb-8 flex justify-center items-center gap-4">
-              <Trophy className="text-yellow-400" size={40} />
-              {prediction.winner.TeamName} Wins!
-              <Trophy className="text-yellow-400" size={40} />
+          <div className="chalk-border p-6 w-full max-w-2xl bg-black/20 animate-fade-in relative">
+            <h2 className="text-3xl text-center chalk-text mb-4 flex justify-center items-center gap-3">
+              <Trophy className="text-yellow-400" size={32} />
+              <span>{prediction.winner.TeamName} Favored!</span>
+              <Trophy className="text-yellow-400" size={32} />
             </h2>
 
-            <div className="flex flex-col space-y-6 text-xl md:text-2xl chalk-text">
-              <div className="flex justify-between items-center border-b-2 border-white/20 pb-4">
-                <span>{prediction.team1.TeamName}</span>
-                <span className="font-bold">{(prediction.probTeam1 * 100).toFixed(1)}%</span>
+            {/* Win Probability Bar */}
+            <div className="w-full bg-black/40 h-6 rounded-full overflow-hidden mb-6 flex border border-white/30 font-mono">
+              <div
+                style={{ width: `${(prediction.probTeam1 * 100).toFixed(1)}%` }}
+                className="bg-emerald-600/80 text-xs text-white flex items-center justify-center font-bold font-mono transition-all duration-500"
+              >
+                {(prediction.probTeam1 * 100).toFixed(1)}%
               </div>
-              <div className="flex justify-between items-center border-b-2 border-white/20 pb-4">
-                <span>{prediction.team2.TeamName}</span>
-                <span className="font-bold">{(prediction.probTeam2 * 100).toFixed(1)}%</span>
+              <div
+                style={{ width: `${(prediction.probTeam2 * 100).toFixed(1)}%` }}
+                className="bg-blue-600/80 text-xs text-white flex items-center justify-center font-bold font-mono transition-all duration-500"
+              >
+                {(prediction.probTeam2 * 100).toFixed(1)}%
               </div>
-              <div className="flex justify-between items-center opacity-80 text-lg md:text-xl pt-2">
-                <span>Rating Differential</span>
-                <span>{prediction.ratingDiff.toFixed(2)} pts</span>
+            </div>
+
+            {/* 3-Column Team Breakdown */}
+            <div className="flex flex-col space-y-3 text-lg md:text-xl chalk-text">
+              <div className="grid grid-cols-12 text-xs uppercase tracking-wider text-white/50 pb-1 border-b border-white/10 font-sans">
+                <span className="col-span-6">Team</span>
+                <span className="col-span-3 text-center">Elo Rating</span>
+                <span className="col-span-3 text-right">Win Prob</span>
+              </div>
+
+              <div className="grid grid-cols-12 items-center border-b border-white/10 pb-2">
+                <span className="col-span-6 font-semibold">{prediction.team1.TeamName}</span>
+                <span className="col-span-3 text-center font-mono opacity-90">{prediction.team1.Rating}</span>
+                <span className="col-span-3 text-right font-mono font-bold text-emerald-300">{(prediction.probTeam1 * 100).toFixed(1)}%</span>
+              </div>
+
+              <div className="grid grid-cols-12 items-center border-b border-white/10 pb-2">
+                <span className="col-span-6 font-semibold">{prediction.team2.TeamName}</span>
+                <span className="col-span-3 text-center font-mono opacity-90">{prediction.team2.Rating}</span>
+                <span className="col-span-3 text-right font-mono font-bold text-blue-300">{(prediction.probTeam2 * 100).toFixed(1)}%</span>
+              </div>
+            </div>
+
+            {/* Informative Stats Breakdown */}
+            <div className="grid grid-cols-2 gap-4 pt-2 text-base md:text-lg opacity-90">
+              <div className="flex flex-col bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-xs uppercase tracking-wider text-white/60">Expected Point Spread</span>
+                <span className="font-bold text-lg text-emerald-300">
+                  {prediction.winner.TeamName} <span className="font-mono">-{prediction.spread.toFixed(1)}</span> pts
+                </span>
+              </div>
+              <div className="flex flex-col bg-white/5 p-3 rounded border border-white/10">
+                <span className="text-xs uppercase tracking-wider text-white/60">Matchup Confidence</span>
+                <span className="font-bold text-lg text-yellow-300">
+                  {prediction.confidence}
+                </span>
               </div>
             </div>
           </div>
