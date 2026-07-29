@@ -1,25 +1,64 @@
+"""
+===============================================================================
+CLI USER INTERFACE MODULE
+===============================================================================
+This module provides a Command-Line Interface (CLI) for running NCAA match 
+predictions directly in the terminal.
+
+Features:
+---------
+1. Interactive Mode: Prompts user for Team 1 ID and Team 2 ID with search functionality.
+2. Direct Mode: Pass `--team1 <ID> --team2 <ID>` flags for instant headless predictions.
+3. Decoupled Architecture: Interacts purely with TeamRepository and BaseMatchPredictor.
+===============================================================================
+"""
+
 import sys
 import argparse
 from typing import Optional
-from src.teams import TeamRepository, Team
-from src.predictor import BaseMatchPredictor, RatingMatchPredictor
+from src.models.teams import TeamRepository, Team
+from src.predictors.predictor import BaseMatchPredictor, RatingMatchPredictor, MatchPrediction
+
 
 class MatchPredictorCLI:
-    """Terminal User Interface for NCAA Match Predictor."""
-    
+    """
+    Terminal User Interface Controller for NCAA Match Prediction.
+    """
     def __init__(self, repo: TeamRepository, predictor: BaseMatchPredictor):
+        """
+        Parameters:
+        -----------
+        repo : TeamRepository
+            Repository containing active 2026 team data.
+        predictor : BaseMatchPredictor
+            Prediction engine instance.
+        """
         self.repo = repo
         self.predictor = predictor
 
     def display_header(self):
+        """Displays formatted CLI header."""
         print("=" * 60)
-        print("   🏀 NCAA MATCH PREDICTOR - STEP 2 BASELINE DEMO 🏀   ")
+        print("   🏀 NCAA MATCH PREDICTOR - TERMINAL INTERFACE 🏀   ")
         print("=" * 60)
         print(f" Loaded {len(self.repo)} active teams for the 2026 season.")
         print("-" * 60)
 
     def prompt_team_id(self, prompt_label: str) -> Team:
-        """Prompts user for a valid Team ID or offers search option."""
+        """
+        Interactively prompts the user for a valid Kaggle Team ID.
+        Supports searching team names by typing 's'.
+
+        Parameters:
+        -----------
+        prompt_label : str
+            Label string ("First" or "Second").
+
+        Returns:
+        --------
+        Team
+            Selected Team object.
+        """
         while True:
             raw_input = input(f"\n👉 Enter {prompt_label} Team ID (or 's' to search by name): ").strip()
             
@@ -48,7 +87,8 @@ class MatchPredictorCLI:
                 print(f"✅ Selected: [{team.team_id}] {team.name} (Rating: {team.rating:.2f})")
                 return team
 
-    def print_prediction_result(self, prediction):
+    def print_prediction_result(self, prediction: MatchPrediction):
+        """Prints a styled summary box of the prediction result."""
         print("\n" + "=" * 60)
         print("             📊 MATCH PREDICTION RESULT 📊             ")
         print("=" * 60)
@@ -62,6 +102,7 @@ class MatchPredictorCLI:
         print("=" * 60 + "\n")
 
     def run_interactive(self):
+        """Runs the interactive prediction CLI loop."""
         self.display_header()
         while True:
             team1 = self.prompt_team_id("First")
@@ -82,6 +123,7 @@ class MatchPredictorCLI:
                 break
 
     def run_direct(self, team1_id: int, team2_id: int):
+        """Runs single prediction directly given two team IDs."""
         self.display_header()
         team1 = self.repo.get_team(team1_id)
         team2 = self.repo.get_team(team2_id)
@@ -96,7 +138,9 @@ class MatchPredictorCLI:
         prediction = self.predictor.predict(team1, team2)
         self.print_prediction_result(prediction)
 
+
 def main():
+    """Main CLI entrypoint parser."""
     parser = argparse.ArgumentParser(description="NCAA Match Predictor CLI")
     parser.add_argument("--team1", type=int, help="ID of Team 1")
     parser.add_argument("--team2", type=int, help="ID of Team 2")

@@ -1,6 +1,6 @@
 import unittest
-from src.teams import Team, TeamRepository
-from src.predictor import RatingMatchPredictor, BaseMatchPredictor
+from src.models import Team, TeamRepository
+from src.predictors import RatingMatchPredictor, BaseMatchPredictor
 
 class TestMatchPredictor(unittest.TestCase):
 
