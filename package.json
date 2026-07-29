@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Probabilistic Forecasting & Match Predictor for 2026 NCAA Tournaments",
   "scripts": {
-    "postinstall": "npm install --prefix webapp",
     "dev": "npm run dev --prefix webapp",
     "build": "npm run build --prefix webapp",
     "start": "npm run start --prefix webapp"
