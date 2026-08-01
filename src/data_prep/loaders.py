@@ -1,18 +1,26 @@
 from pathlib import Path
+
 import pandas as pd
 
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+# loaders.py is assumed to be inside:
+# project_root/src/data_prep/loaders.py
+#
+# Therefore parents[2] points to project_root.
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / "data"
 
 
 def get_teams() -> pd.DataFrame:
     """
-    Load the master NCAA teams table.
+    Load the NCAA men's teams table.
 
     Returns
     -------
     pd.DataFrame
-        DataFrame containing at least TeamID and TeamName.
+        Columns:
+        - TeamID
+        - TeamName
     """
     file_path = DATA_DIR / "MTeams.csv"
 
@@ -20,16 +28,24 @@ def get_teams() -> pd.DataFrame:
 
     return teams[["TeamID", "TeamName"]].copy()
 
+def get_regular_season_games(
+    season: int,
+) -> pd.DataFrame:
+    """
+    Load one season of regular-season games,
+    sorted chronologically.
+    """
 
-def get_regular_season_games() -> pd.DataFrame:
-    """
-    Load the raw NCAA men's regular season games.
-    """
-    return pd.read_csv(DATA_DIR / "MRegularSeasonCompactResults.csv")    
+    file_path = DATA_DIR / "MRegularSeasonCompactResults.csv"
 
+    games = pd.read_csv(file_path)
 
-def get_tournament_games() -> pd.DataFrame:
-    """
-    Load the raw NCAA men's tournament games.
-    """
-    return pd.read_csv(DATA_DIR / "MNCAATourneyCompactResults.csv")
+    games = games[
+        games["Season"] == season
+    ].copy()
+
+    games = games.sort_values(
+        by="DayNum"
+    ).reset_index(drop=True)
+
+    return games
