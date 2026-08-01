@@ -32,11 +32,10 @@ def get_regular_season_games(
     season: int,
 ) -> pd.DataFrame:
     """
-    Load one season of regular-season games,
+    Load one season of regular-season detailed games,
     sorted chronologically.
     """
-
-    file_path = DATA_DIR / "MRegularSeasonCompactResults.csv"
+    file_path = DATA_DIR / "MRegularSeasonDetailedResults.csv"
 
     games = pd.read_csv(file_path)
 

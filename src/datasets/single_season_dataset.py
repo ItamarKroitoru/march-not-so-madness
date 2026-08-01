@@ -5,7 +5,7 @@ from src.data_loading.loaders import (
     get_teams,
 )
 from src.state.team_state import TeamState
-from src.game_processing.game_processor import process_game
+from src.game_processing.process_game import process_game
 from src.features.game_features import build_game_feature_row
 
 
