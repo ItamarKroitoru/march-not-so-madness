@@ -1,11 +1,11 @@
 import pandas as pd
 
-from src.data_prep.loaders import (
+from src.data_loading.loaders import (
     get_regular_season_games,
     get_teams,
 )
-from src.ML.team_state import TeamState
-from src.ML.game_processor import process_game
+from src.state.team_state import TeamState
+from src.processing.game_processor import process_game
 
 
 def get_team_ids(season_games: pd.DataFrame) -> set[int]:

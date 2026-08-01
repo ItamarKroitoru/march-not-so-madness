@@ -1,12 +1,12 @@
 import pandas as pd
 
-from src.data_prep.loaders import (
+from src.data_loading.loaders import (
     get_regular_season_games,
     get_tournament_games,
 )
-from src.evaluation.game_level import evaluate_season
-from src.prediction.higher_rating import predict_winner
-from src.rating.context_rating import build_team_ratings
+from src.baselines.game_level import evaluate_season
+from src.baselines.higher_rating import predict_winner
+from src.baselines.margin_rating import build_team_ratings
 
 
 def run_season(

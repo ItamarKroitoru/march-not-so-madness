@@ -1,10 +1,10 @@
 import pandas as pd
 
-from src.data_prep.loaders import (
+from src.data_loading.loaders import (
     get_regular_season_games,
     get_regular_seasons,
 )
-from src.ML.season_replay import build_Xy_dataset
+from src.datasets.single_season_dataset import build_Xy_dataset
 
 
 def build_all_Xy_datasets(
