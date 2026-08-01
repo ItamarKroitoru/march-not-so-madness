@@ -43,13 +43,14 @@ def build_Xy_dataset(
     """
     Replay one regular season and construct X and y.
 
-    For non-neutral games:
-        team_1 = home team
-        team_2 = away team
-
-    For neutral games:
+    Team ordering:
         team_1 = lower TeamID
         team_2 = higher TeamID
+
+    team_1_location:
+         1 = team_1 is home
+        -1 = team_1 is away
+         0 = neutral
 
     y:
         1 if team_1 won
@@ -75,25 +76,41 @@ def build_Xy_dataset(
     for _, game in season_games.iterrows():
         winner_id = int(game["WTeamID"])
         loser_id = int(game["LTeamID"])
-        winner_location = game["WLoc"]
+        winner_location = str(game["WLoc"])
 
-        if winner_location == "H":
-            team_1_id = winner_id
-            team_2_id = loser_id
-            label = 1
-            is_neutral = 0
+        if winner_location not in {"H", "A", "N"}:
+            raise ValueError(
+                "WLoc must be 'H', 'A', or 'N'. "
+                f"Received: {winner_location!r}"
+            )
 
-        elif winner_location == "A":
-            team_1_id = loser_id
-            team_2_id = winner_id
-            label = 0
-            is_neutral = 0
+        # Stable ordering for every game.
+        team_1_id = min(winner_id, loser_id)
+        team_2_id = max(winner_id, loser_id)
+
+        # 1 if the lower-ID team won, otherwise 0.
+        label = int(team_1_id == winner_id)
+
+        # Location from team_1's perspective.
+        if winner_location == "N":
+            team_1_location = 0
+
+        elif team_1_id == winner_id:
+            # team_1 is the winner, so WLoc is already
+            # from team_1's perspective.
+            team_1_location = (
+                1
+                if winner_location == "H"
+                else -1
+            )
 
         else:
-            team_1_id = min(winner_id, loser_id)
-            team_2_id = max(winner_id, loser_id)
-            label = int(team_1_id == winner_id)
-            is_neutral = 1
+            # team_1 is the loser, so invert WLoc.
+            team_1_location = (
+                -1
+                if winner_location == "H"
+                else 1
+            )
 
         team_1_state = team_states[team_1_id]
         team_2_state = team_states[team_2_id]
@@ -104,17 +121,17 @@ def build_Xy_dataset(
             team_name_lookup=team_name_lookup,
             season=int(game["Season"]),
             day_num=int(game["DayNum"]),
-            is_neutral=is_neutral,
+            team_1_location=team_1_location,
         )
 
         feature_rows.append(feature_row)
         labels.append(label)
 
+        # Update states only after saving the pregame row.
         process_game(
             game=game,
             team_states=team_states,
         )
-
 
     X = pd.DataFrame(feature_rows)
 

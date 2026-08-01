@@ -1,9 +1,52 @@
+from collections import deque
+from dataclasses import dataclass
+
+LAST_K_RECENT_GAMES = 5
+
+
+@dataclass(frozen=True)
+class GameStats:
+    """
+    Store one completed game's statistics from one team's perspective.
+
+    These records are kept inside TeamState.recent_games
+    for calculating recent-form features.
+    """
+
+    won: bool
+    location: str
+
+    points_scored: int
+    points_allowed: int
+
+    fgm: int
+    fga: int
+    fgm3: int
+    fga3: int
+    ftm: int
+    fta: int
+
+    offensive_rebounds: int
+    defensive_rebounds: int
+    assists: int
+    turnovers: int
+    steals: int
+    blocks: int
+    personal_fouls: int
+
+
 class TeamState:
     """
     Store the accumulated regular-season history of one team.
 
+    The state contains:
+
+    1. Full-season cumulative totals.
+    2. Location-specific results.
+    3. The five most recently completed games.
+
     All values represent completed games only. Derived statistics such as
-    percentages and per-game averages are calculated later from these totals.
+    percentages and per-game averages are calculated later.
     """
 
     def __init__(
@@ -72,6 +115,10 @@ class TeamState:
         self.neutral_games = neutral_games
         self.neutral_wins = neutral_wins
 
+        # Most recent completed games.
+        # When a sixth game is appended, the oldest is removed automatically.
+        self.recent_games: deque[GameStats] = deque(maxlen=LAST_K_RECENT_GAMES)
+
     def update_after_game(
         self,
         points_scored: int,
@@ -93,16 +140,16 @@ class TeamState:
         personal_fouls: int,
     ) -> None:
         """
-        Update this team's accumulated state after one completed game.
+        Update this team's state after one completed game.
 
         Parameters
         ----------
         location
-            The location from this team's perspective:
+            Location from this team's perspective:
 
-            H = this team played at home
-            A = this team played away
-            N = neutral court
+            H = home
+            A = away
+            N = neutral
         """
         if location not in {"H", "A", "N"}:
             raise ValueError(
@@ -158,35 +205,25 @@ class TeamState:
             if won:
                 self.neutral_wins += 1
 
-    def __repr__(self) -> str:
-        return (
-            "TeamState("
-            f"team_id={self.team_id}, "
-            f"games_played={self.games_played}, "
-            f"wins={self.wins}, "
-            f"losses={self.losses}, "
-            f"total_points_scored={self.total_points_scored}, "
-            f"total_points_allowed={self.total_points_allowed}, "
-            f"total_fgm={self.total_fgm}, "
-            f"total_fga={self.total_fga}, "
-            f"total_fgm3={self.total_fgm3}, "
-            f"total_fga3={self.total_fga3}, "
-            f"total_ftm={self.total_ftm}, "
-            f"total_fta={self.total_fta}, "
-            f"total_offensive_rebounds="
-            f"{self.total_offensive_rebounds}, "
-            f"total_defensive_rebounds="
-            f"{self.total_defensive_rebounds}, "
-            f"total_assists={self.total_assists}, "
-            f"total_turnovers={self.total_turnovers}, "
-            f"total_steals={self.total_steals}, "
-            f"total_blocks={self.total_blocks}, "
-            f"total_personal_fouls={self.total_personal_fouls}, "
-            f"home_record={self.home_wins}-"
-            f"{self.home_games - self.home_wins}, "
-            f"away_record={self.away_wins}-"
-            f"{self.away_games - self.away_wins}, "
-            f"neutral_record={self.neutral_wins}-"
-            f"{self.neutral_games - self.neutral_wins}"
-            ")"
+        # Save this individual game for recent-form calculations.
+        self.recent_games.append(
+            GameStats(
+                won=won,
+                location=location,
+                points_scored=points_scored,
+                points_allowed=points_allowed,
+                fgm=fgm,
+                fga=fga,
+                fgm3=fgm3,
+                fga3=fga3,
+                ftm=ftm,
+                fta=fta,
+                offensive_rebounds=offensive_rebounds,
+                defensive_rebounds=defensive_rebounds,
+                assists=assists,
+                turnovers=turnovers,
+                steals=steals,
+                blocks=blocks,
+                personal_fouls=personal_fouls,
+            )
         )
