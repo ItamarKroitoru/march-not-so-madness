@@ -1,3 +1,7 @@
+from src.features.team_features import (
+    build_team_features,
+)
+
 from src.state.team_state import TeamState
 
 
@@ -20,20 +24,22 @@ def build_game_feature_row(
         "DayNum": day_num,
 
         "team_1_id": team_1_state.team_id,
-        "team_1_name": team_name_lookup[team_1_state.team_id],
-        "team_1_games_played": team_1_state.games_played,
-        "team_1_wins": team_1_state.wins,
-        "team_1_losses": team_1_state.losses,
-        "team_1_points_scored": team_1_state.total_points_scored,
-        "team_1_points_allowed": team_1_state.total_points_allowed,
+        "team_1_name": team_name_lookup[
+            team_1_state.team_id
+        ],
+        **build_team_features(
+            team_1_state,
+            prefix="team_1",
+        ),
 
         "team_2_id": team_2_state.team_id,
-        "team_2_name": team_name_lookup[team_2_state.team_id],
-        "team_2_games_played": team_2_state.games_played,
-        "team_2_wins": team_2_state.wins,
-        "team_2_losses": team_2_state.losses,
-        "team_2_points_scored": team_2_state.total_points_scored,
-        "team_2_points_allowed": team_2_state.total_points_allowed,
+        "team_2_name": team_name_lookup[
+            team_2_state.team_id
+        ],
+        **build_team_features(
+            team_2_state,
+            prefix="team_2",
+        ),
 
         "is_neutral": is_neutral,
     }

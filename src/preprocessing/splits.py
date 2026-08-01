@@ -1,9 +1,8 @@
 import pandas as pd
 
 
-def split_by_season(
+def split_raw_by_season(
     raw_X: pd.DataFrame,
-    X: pd.DataFrame,
     y: pd.Series,
     test_seasons: list[int],
 ) -> tuple[
@@ -13,44 +12,43 @@ def split_by_season(
     pd.Series,
 ]:
     """
-    Split a preprocessed dataset into train and test sets by season.
+    Split the raw canonical dataset by season.
 
-    Parameters
-    ----------
-    raw_X
-        Original dataset containing metadata columns
-        (including Season).
-    X
-        Preprocessed feature matrix.
-    y
-        Labels.
-    test_seasons
-        Seasons reserved for testing.
-
-    Returns
-    -------
-    X_train
-    X_test
-    y_train
-    y_test
+    The returned feature tables still contain metadata.
+    Preprocessing happens afterward.
     """
-    train_mask = ~raw_X["Season"].isin(
-        test_seasons
+    if "Season" not in raw_X.columns:
+        raise ValueError("raw_X must contain a 'Season' column.")
+
+    missing_test_seasons = (
+        set(test_seasons)
+        - set(raw_X["Season"].unique())
     )
 
-    test_mask = raw_X["Season"].isin(
-        test_seasons
-    )
+    if missing_test_seasons:
+        raise ValueError(
+            "Requested test seasons are missing from raw_X: "
+            f"{sorted(missing_test_seasons)}"
+        )
 
-    X_train = X.loc[train_mask]
-    X_test = X.loc[test_mask]
+    train_mask = ~raw_X["Season"].isin(test_seasons)
+    test_mask = raw_X["Season"].isin(test_seasons)
 
-    y_train = y.loc[train_mask]
-    y_test = y.loc[test_mask]
+    raw_X_train = raw_X.loc[train_mask].copy()
+    raw_X_test = raw_X.loc[test_mask].copy()
+
+    y_train = y.loc[train_mask].copy()
+    y_test = y.loc[test_mask].copy()
+
+    if raw_X_train.empty:
+        raise ValueError("Training set is empty.")
+
+    if raw_X_test.empty:
+        raise ValueError("Test set is empty.")
 
     return (
-        X_train,
-        X_test,
+        raw_X_train,
+        raw_X_test,
         y_train,
         y_test,
     )
