@@ -6,64 +6,70 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
-METADATA_COLUMNS = {
-    "Season",
-    "DayNum",
-    "team_1_id",
-    "team_1_name",
-    "team_2_id",
-    "team_2_name",
-}
-
-
 def train_logistic_regression(
-    X: pd.DataFrame,
-    y: pd.Series,
-    test_seasons: list[int],
-):
-    train_mask = ~X["Season"].isin(test_seasons)
-    test_mask = X["Season"].isin(test_seasons)
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    y_train: pd.Series,
+    y_test: pd.Series,
+) -> tuple[Pipeline, dict[str, int | float]]:
+    """
+    Train and evaluate a logistic regression model.
 
-    model_X = X.drop(
-        columns=[
-            column
-            for column in METADATA_COLUMNS
-            if column in X.columns
-        ]
-    )
+    Parameters
+    ----------
+    X_train
+        Preprocessed training features.
+    X_test
+        Preprocessed testing features.
+    y_train
+        Training labels.
+    y_test
+        Testing labels.
 
-    X_train = model_X.loc[train_mask]
-    X_test = model_X.loc[test_mask]
-
-    y_train = y.loc[train_mask]
-    y_test = y.loc[test_mask]
-
+    Returns
+    -------
+    model
+        Trained scaling and logistic-regression pipeline.
+    results
+        Evaluation metrics and dataset sizes.
+    """
     model = Pipeline(
         [
-            ("scaler", StandardScaler()),
+            (
+                "scaler",
+                StandardScaler(),
+            ),
             (
                 "logistic_regression",
-                LogisticRegression(max_iter=1000),
+                LogisticRegression(
+                    max_iter=1000,
+                ),
             ),
         ]
     )
 
-    model.fit(X_train, y_train)
+    model.fit(
+        X_train,
+        y_train,
+    )
 
     predictions = model.predict(X_test)
-    probabilities = model.predict_proba(X_test)[:, 1]
+
+    probabilities = model.predict_proba(
+        X_test
+    )[:, 1]
 
     results = {
-        "train_seasons": sorted(
-            X.loc[train_mask, "Season"].unique().tolist()
-        ),
-        "test_seasons": sorted(
-            X.loc[test_mask, "Season"].unique().tolist()
-        ),
         "train_games": len(X_train),
         "test_games": len(X_test),
-        "accuracy": accuracy_score(y_test, predictions),
-        "log_loss": log_loss(y_test, probabilities),
+        "accuracy": accuracy_score(
+            y_test,
+            predictions,
+        ),
+        "log_loss": log_loss(
+            y_test,
+            probabilities,
+        ),
     }
 
     return model, results

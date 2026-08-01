@@ -7,7 +7,7 @@ from src.data_loading.loaders import (
 from src.datasets.single_season_dataset import build_Xy_dataset
 
 
-def build_all_Xy_datasets(
+def build_multi_season_dataset(
     seasons: list[int] | None = None,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """
