@@ -49,3 +49,16 @@ def get_regular_season_games(
     ).reset_index(drop=True)
 
     return games
+
+def get_regular_seasons() -> list[int]:
+    """
+    Return all seasons available in the regular-season results file.
+    """
+    file_path = DATA_DIR / "MRegularSeasonCompactResults.csv"
+
+    seasons = pd.read_csv(
+        file_path,
+        usecols=["Season"],
+    )["Season"]
+
+    return sorted(seasons.unique().tolist())

@@ -40,12 +40,17 @@ def build_game_feature_row(
     team_1_state: TeamState,
     team_2_state: TeamState,
     team_name_lookup: dict[int, str],
+    season: int,
+    day_num: int,
     is_neutral: int,
 ) -> dict:
     """
     Build one pregame row of X.
     """
     return {
+        "Season": season,
+        "DayNum": day_num,
+
         "team_1_id": team_1_state.team_id,
         "team_1_name": team_name_lookup[team_1_state.team_id],
         "team_1_games_played": team_1_state.games_played,
@@ -131,6 +136,8 @@ def build_Xy_dataset(
             team_1_state=team_1_state,
             team_2_state=team_2_state,
             team_name_lookup=team_name_lookup,
+            season=int(game["Season"]),
+            day_num=int(game["DayNum"]),
             is_neutral=is_neutral,
         )
 
