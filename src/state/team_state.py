@@ -1,16 +1,13 @@
 from collections import deque
 from dataclasses import dataclass
 
-LAST_K_RECENT_GAMES = 5
-
 
 @dataclass(frozen=True)
 class GameStats:
     """
     Store one completed game's statistics from one team's perspective.
 
-    These records are kept inside TeamState.recent_games
-    for calculating recent-form features.
+    These records are used to calculate recent-form features.
     """
 
     won: bool
@@ -40,13 +37,13 @@ class TeamState:
     Store the accumulated regular-season history of one team.
 
     The state contains:
+        1. Full-season cumulative totals.
+        2. Location-specific records.
+        3. The ten most recent completed games.
+        4. Current win and loss streaks.
 
-    1. Full-season cumulative totals.
-    2. Location-specific results.
-    3. The five most recently completed games.
-
-    All values represent completed games only. Derived statistics such as
-    percentages and per-game averages are calculated later.
+    All values represent completed games only.
+    Derived statistics are calculated later.
     """
 
     def __init__(
@@ -76,6 +73,8 @@ class TeamState:
         away_wins: int = 0,
         neutral_games: int = 0,
         neutral_wins: int = 0,
+        current_win_streak: int = 0,
+        current_loss_streak: int = 0,
     ):
         self.team_id = team_id
 
@@ -115,9 +114,14 @@ class TeamState:
         self.neutral_games = neutral_games
         self.neutral_wins = neutral_wins
 
-        # Most recent completed games.
-        # When a sixth game is appended, the oldest is removed automatically.
-        self.recent_games: deque[GameStats] = deque(maxlen=LAST_K_RECENT_GAMES)
+        # Current momentum
+        self.current_win_streak = current_win_streak
+        self.current_loss_streak = current_loss_streak
+
+        # Keep the ten most recent completed games.
+        self.recent_games: deque[GameStats] = deque(
+            maxlen=10,
+        )
 
     def update_after_game(
         self,
@@ -142,11 +146,7 @@ class TeamState:
         """
         Update this team's state after one completed game.
 
-        Parameters
-        ----------
-        location
-            Location from this team's perspective:
-
+        location:
             H = home
             A = away
             N = neutral
@@ -157,13 +157,17 @@ class TeamState:
                 f"Received: {location!r}"
             )
 
-        # Overall results
+        # Overall results and streaks
         self.games_played += 1
 
         if won:
             self.wins += 1
+            self.current_win_streak += 1
+            self.current_loss_streak = 0
         else:
             self.losses += 1
+            self.current_loss_streak += 1
+            self.current_win_streak = 0
 
         # Scoring
         self.total_points_scored += points_scored
@@ -199,13 +203,13 @@ class TeamState:
             if won:
                 self.away_wins += 1
 
-        else:  # location == "N"
+        else:
             self.neutral_games += 1
 
             if won:
                 self.neutral_wins += 1
 
-        # Save this individual game for recent-form calculations.
+        # Save the completed game for recent-form features.
         self.recent_games.append(
             GameStats(
                 won=won,
@@ -227,3 +231,4 @@ class TeamState:
                 personal_fouls=personal_fouls,
             )
         )
+

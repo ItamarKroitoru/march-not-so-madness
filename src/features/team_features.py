@@ -1,4 +1,6 @@
-from src.state.team_state import TeamState
+from collections.abc import Sequence
+
+from src.state.team_state import GameStats, TeamState
 
 
 def safe_divide(
@@ -24,10 +26,8 @@ def build_season_features(
     games_played = team_state.games_played
 
     return {
-        # Experience
+        # Experience and record
         f"{prefix}_games_played": games_played,
-
-        # Record
         f"{prefix}_wins": team_state.wins,
         f"{prefix}_losses": team_state.losses,
         f"{prefix}_win_pct": safe_divide(
@@ -45,7 +45,7 @@ def build_season_features(
             games_played,
         ),
 
-        # Shooting percentages
+        # Shooting
         f"{prefix}_fg_pct": safe_divide(
             team_state.total_fgm,
             team_state.total_fga,
@@ -59,7 +59,7 @@ def build_season_features(
             team_state.total_fta,
         ),
 
-        # Per-game box score
+        # Per-game box-score statistics
         f"{prefix}_off_rebounds_pg": safe_divide(
             team_state.total_offensive_rebounds,
             games_played,
@@ -105,146 +105,222 @@ def build_season_features(
     }
 
 
-def build_recent_features(
+def build_recent_window_features(
+    recent_games: Sequence[GameStats],
+    prefix: str,
+    window_size: int,
+) -> dict:
+    """
+    Build recent-form features for one rolling game window.
+    """
+    games = list(recent_games)[-window_size:]
+    games_played = len(games)
+
+    wins = sum(
+        int(game.won)
+        for game in games
+    )
+
+    points_scored = sum(
+        game.points_scored
+        for game in games
+    )
+    points_allowed = sum(
+        game.points_allowed
+        for game in games
+    )
+
+    fgm = sum(game.fgm for game in games)
+    fga = sum(game.fga for game in games)
+
+    fgm3 = sum(game.fgm3 for game in games)
+    fga3 = sum(game.fga3 for game in games)
+
+    ftm = sum(game.ftm for game in games)
+    fta = sum(game.fta for game in games)
+
+    offensive_rebounds = sum(
+        game.offensive_rebounds
+        for game in games
+    )
+    defensive_rebounds = sum(
+        game.defensive_rebounds
+        for game in games
+    )
+
+    assists = sum(game.assists for game in games)
+    turnovers = sum(game.turnovers for game in games)
+    steals = sum(game.steals for game in games)
+    blocks = sum(game.blocks for game in games)
+
+    personal_fouls = sum(
+        game.personal_fouls
+        for game in games
+    )
+
+    feature_prefix = f"{prefix}_last_{window_size}"
+
+    return {
+        f"{feature_prefix}_games_played": games_played,
+
+        f"{feature_prefix}_win_pct": safe_divide(
+            wins,
+            games_played,
+        ),
+
+        f"{feature_prefix}_ppg": safe_divide(
+            points_scored,
+            games_played,
+        ),
+        f"{feature_prefix}_papg": safe_divide(
+            points_allowed,
+            games_played,
+        ),
+
+        f"{feature_prefix}_fg_pct": safe_divide(
+            fgm,
+            fga,
+        ),
+        f"{feature_prefix}_fg3_pct": safe_divide(
+            fgm3,
+            fga3,
+        ),
+        f"{feature_prefix}_ft_pct": safe_divide(
+            ftm,
+            fta,
+        ),
+
+        f"{feature_prefix}_off_rebounds_pg": safe_divide(
+            offensive_rebounds,
+            games_played,
+        ),
+        f"{feature_prefix}_def_rebounds_pg": safe_divide(
+            defensive_rebounds,
+            games_played,
+        ),
+        f"{feature_prefix}_assists_pg": safe_divide(
+            assists,
+            games_played,
+        ),
+        f"{feature_prefix}_turnovers_pg": safe_divide(
+            turnovers,
+            games_played,
+        ),
+        f"{feature_prefix}_steals_pg": safe_divide(
+            steals,
+            games_played,
+        ),
+        f"{feature_prefix}_blocks_pg": safe_divide(
+            blocks,
+            games_played,
+        ),
+        f"{feature_prefix}_personal_fouls_pg": safe_divide(
+            personal_fouls,
+            games_played,
+        ),
+    }
+
+
+def build_recent_5_features(
     team_state: TeamState,
     prefix: str,
 ) -> dict:
     """
-    Build recent-form features from the team's last five completed games.
-
-    Before a team has played five games, all available previous games are used.
+    Build features from the five most recent completed games.
     """
-    recent_games = list(team_state.recent_games)
-    recent_games_played = len(recent_games)
-
-    recent_wins = sum(
-        int(game.won)
-        for game in recent_games
+    return build_recent_window_features(
+        recent_games=team_state.recent_games,
+        prefix=prefix,
+        window_size=5,
     )
 
-    total_points_scored = sum(
-        game.points_scored
-        for game in recent_games
-    )
-    total_points_allowed = sum(
-        game.points_allowed
-        for game in recent_games
+
+def build_recent_10_features(
+    team_state: TeamState,
+    prefix: str,
+) -> dict:
+    """
+    Build features from the ten most recent completed games.
+    """
+    return build_recent_window_features(
+        recent_games=team_state.recent_games,
+        prefix=prefix,
+        window_size=10,
     )
 
-    total_fgm = sum(
-        game.fgm
-        for game in recent_games
-    )
-    total_fga = sum(
-        game.fga
-        for game in recent_games
+
+def build_streak_features(
+    team_state: TeamState,
+    prefix: str,
+) -> dict:
+    """
+    Build current consecutive win/loss streak features.
+    """
+    return {
+        f"{prefix}_current_win_streak":
+            team_state.current_win_streak,
+
+        f"{prefix}_current_loss_streak":
+            team_state.current_loss_streak,
+    }
+
+
+def build_efficiency_features(
+    team_state: TeamState,
+    prefix: str,
+) -> dict:
+    """
+    Build derived full-season efficiency and style features.
+    """
+    games_played = team_state.games_played
+
+    total_rebounds = (
+        team_state.total_offensive_rebounds
+        + team_state.total_defensive_rebounds
     )
 
-    total_fgm3 = sum(
-        game.fgm3
-        for game in recent_games
-    )
-    total_fga3 = sum(
-        game.fga3
-        for game in recent_games
+    point_differential = (
+        team_state.total_points_scored
+        - team_state.total_points_allowed
     )
 
-    total_ftm = sum(
-        game.ftm
-        for game in recent_games
-    )
-    total_fta = sum(
-        game.fta
-        for game in recent_games
-    )
-
-    total_offensive_rebounds = sum(
-        game.offensive_rebounds
-        for game in recent_games
-    )
-    total_defensive_rebounds = sum(
-        game.defensive_rebounds
-        for game in recent_games
-    )
-
-    total_assists = sum(
-        game.assists
-        for game in recent_games
-    )
-    total_turnovers = sum(
-        game.turnovers
-        for game in recent_games
-    )
-    total_steals = sum(
-        game.steals
-        for game in recent_games
-    )
-    total_blocks = sum(
-        game.blocks
-        for game in recent_games
-    )
-    total_personal_fouls = sum(
-        game.personal_fouls
-        for game in recent_games
+    effective_fg_pct = safe_divide(
+        team_state.total_fgm
+        + 0.5 * team_state.total_fgm3,
+        team_state.total_fga,
     )
 
     return {
-        f"{prefix}_last_5_games_played": recent_games_played,
-
-        f"{prefix}_last_5_win_pct": safe_divide(
-            recent_wins,
-            recent_games_played,
+        f"{prefix}_point_diff_pg": safe_divide(
+            point_differential,
+            games_played,
         ),
 
-        f"{prefix}_last_5_ppg": safe_divide(
-            total_points_scored,
-            recent_games_played,
-        ),
-        f"{prefix}_last_5_papg": safe_divide(
-            total_points_allowed,
-            recent_games_played,
+        f"{prefix}_effective_fg_pct": effective_fg_pct,
+
+        f"{prefix}_assist_turnover_ratio": safe_divide(
+            team_state.total_assists,
+            team_state.total_turnovers,
         ),
 
-        f"{prefix}_last_5_fg_pct": safe_divide(
-            total_fgm,
-            total_fga,
-        ),
-        f"{prefix}_last_5_fg3_pct": safe_divide(
-            total_fgm3,
-            total_fga3,
-        ),
-        f"{prefix}_last_5_ft_pct": safe_divide(
-            total_ftm,
-            total_fta,
+        f"{prefix}_total_rebounds_pg": safe_divide(
+            total_rebounds,
+            games_played,
         ),
 
-        f"{prefix}_last_5_off_rebounds_pg": safe_divide(
-            total_offensive_rebounds,
-            recent_games_played,
+        f"{prefix}_fg3_attempt_rate": safe_divide(
+            team_state.total_fga3,
+            team_state.total_fga,
         ),
-        f"{prefix}_last_5_def_rebounds_pg": safe_divide(
-            total_defensive_rebounds,
-            recent_games_played,
+
+        f"{prefix}_ft_attempt_rate": safe_divide(
+            team_state.total_fta,
+            team_state.total_fga,
         ),
-        f"{prefix}_last_5_assists_pg": safe_divide(
-            total_assists,
-            recent_games_played,
-        ),
-        f"{prefix}_last_5_turnovers_pg": safe_divide(
-            total_turnovers,
-            recent_games_played,
-        ),
-        f"{prefix}_last_5_steals_pg": safe_divide(
-            total_steals,
-            recent_games_played,
-        ),
-        f"{prefix}_last_5_blocks_pg": safe_divide(
-            total_blocks,
-            recent_games_played,
-        ),
-        f"{prefix}_last_5_personal_fouls_pg": safe_divide(
-            total_personal_fouls,
-            recent_games_played,
+
+        f"{prefix}_turnover_to_assist_ratio": safe_divide(
+            team_state.total_turnovers,
+            team_state.total_assists,
         ),
     }
 
@@ -254,14 +330,26 @@ def build_team_features(
     prefix: str,
 ) -> dict:
     """
-    Build all current pregame features for one team.
+    Build all current pregame feature families for one team.
     """
     return {
         **build_season_features(
             team_state=team_state,
             prefix=prefix,
         ),
-        **build_recent_features(
+        **build_recent_5_features(
+            team_state=team_state,
+            prefix=prefix,
+        ),
+        **build_recent_10_features(
+            team_state=team_state,
+            prefix=prefix,
+        ),
+        **build_streak_features(
+            team_state=team_state,
+            prefix=prefix,
+        ),
+        **build_efficiency_features(
             team_state=team_state,
             prefix=prefix,
         ),

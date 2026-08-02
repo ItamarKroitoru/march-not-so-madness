@@ -1,0 +1,141 @@
+NCAA March Madness Prediction Project - Current State
+
+We are building a clean, extensible NCAA March Madness prediction
+pipeline in Python. The philosophy is to first engineer the best
+possible dataset, then compare models later. We intentionally optimize
+the information available to the model before experimenting with more
+sophisticated algorithms.
+
+Ultimate Goal
+
+Predict the NCAA tournament bracket.
+
+Roadmap: 1. Learn a general game prediction model from regular-season
+games. 2. Evaluate/adapt it for tournament games. 3. Build a bracket
+simulator.
+
+Regular-season prediction acts conceptually like “pretraining”;
+tournament adaptation may later resemble fine-tuning or a meta-model.
+
+Current Pipeline
+
+Regular Season Games → Replay season chronologically → Maintain
+TeamState for every team → Before every game: build pregame feature row
+→ After saving the row: update TeamState → Repeat → raw_X + y → Split by
+season → Preprocess → Train Logistic Regression → Evaluate
+
+Key invariant: Every feature is computed only from information available
+before the current game. No data leakage.
+
+Dataset Philosophy
+
+raw_X is the canonical dataset.
+
+It contains: - Metadata - Team IDs - Team names - All pregame features
+
+Later:
+
+raw_X → preprocess_X() → X
+
+raw_X is never modified or destroyed.
+
+Team Ordering
+
+Current representation:
+
+-   team_1 = lower TeamID
+-   team_2 = higher TeamID
+
+Label: - y = 1 if team_1 won
+
+Home advantage is represented by:
+
+-   team_1_location
+    -   1 = home
+    -   0 = neutral
+    -   -1 = away
+
+This representation works identically for regular-season and tournament
+games.
+
+TeamState
+
+TeamState stores accumulated historical information only.
+
+It stores raw totals—not averages.
+
+Examples: - Games played - Wins/losses - Total points - Shooting
+totals - Rebounds - Assists - Turnovers - Location records
+
+Derived statistics (PPG, FG%, etc.) are computed later.
+
+Recent History
+
+TeamState stores:
+
+recent_games = deque(maxlen=10)
+
+Each GameStats stores: - Result - Location - Points - Shooting -
+Rebounds - Assists - Turnovers - Steals - Blocks - Fouls
+
+Features are derived from: - Last 5 games - Last 10 games
+
+using the same deque.
+
+Momentum
+
+TeamState also stores: - current_win_streak - current_loss_streak
+
+Feature Architecture
+
+build_team_features() ├── build_season_features() ├──
+build_recent_5_features() ├── build_recent_10_features() ├──
+build_streak_features() └── build_efficiency_features()
+
+Current Feature Families
+
+Season: - Record - PPG/PAPG - Shooting % - Per-game box score -
+Home/Away/Neutral win %
+
+Recent 5: - Same statistics over last 5 games
+
+Recent 10: - Same statistics over last 10 games
+
+Momentum: - Current win streak - Current loss streak
+
+Efficiency: - Point differential/game - Effective FG% - Assist/turnover
+ratio - Total rebounds/game - 3PT attempt rate - FT attempt rate -
+Turnover/assist ratio
+
+Data Source
+
+Using MRegularSeasonDetailedResults (2003+), replacing CompactResults.
+
+Evaluation
+
+Current evaluation reports: - Accuracy - Log Loss - ROC-AUC - Confusion
+Matrix
+
+Also includes Logistic Regression coefficient analysis: - Top positive
+coefficients - Top negative coefficients - Coefficient plots
+
+Current Model
+
+Pipeline: - StandardScaler - LogisticRegression (L2 regularization)
+
+Next Roadmap
+
+1.  Continue feature engineering.
+2.  Add remaining strong basketball features (Massey ratings, strength
+    of schedule, etc.).
+3.  Evaluate on historical tournament games.
+4.  Compare stronger ML models.
+5.  Build a tournament bracket simulator.
+
+Guiding Philosophy
+
+Improve the information before improving the model.
+
+The objective is to create the strongest possible representation of each
+team’s state before every game. Once the dataset is mature, compare
+machine learning models on the exact same feature set.
