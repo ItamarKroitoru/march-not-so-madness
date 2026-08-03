@@ -15,9 +15,8 @@ Features:
 
 import sys
 import argparse
-from typing import Optional
 from src.models.teams import TeamRepository, Team
-from src.predictors.predictor import BaseMatchPredictor, RatingMatchPredictor, MatchPrediction
+from src.predictors import BaseMatchPredictor, RatingMatchPredictor, MatchPrediction
 
 
 class MatchPredictorCLI:

@@ -23,7 +23,7 @@ Where:
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import math
-from src.models.teams import Team
+from src.itamar.teams import Team
 
 
 @dataclass
