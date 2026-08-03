@@ -1,10 +1,14 @@
 {
   "name": "march-not-so-madness",
   "version": "1.0.0",
-  "description": "Probabilistic Forecasting & Match Predictor for 2026 NCAA Tournaments",
+  "private": true,
+  "workspaces": [
+    "webapp"
+  ],
   "scripts": {
-    "dev": "npm run dev --prefix webapp",
-    "build": "npm run build --prefix webapp",
-    "start": "npm run start --prefix webapp"
+    "dev": "npm run dev --workspace=webapp",
+    "build": "npm run build --workspace=webapp",
+    "start": "npm run start --workspace=webapp"
   }
 }
+
