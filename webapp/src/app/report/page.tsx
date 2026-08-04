@@ -16,7 +16,7 @@ export default function ReportPage() {
           <span>PROJECT EVALUATION REPORT</span>
         </h1>
         <p className="text-lg chalk-text opacity-85 italic mt-2">
-          NCAA March Not-So-Madness &bull; Machine Learning Pipeline & Methodology Documentation
+          NCAA March not-so Madness &bull; Machine Learning Pipeline & Methodology Documentation
         </p>
 
         <div className="mt-4 flex justify-center">
@@ -66,7 +66,7 @@ export default function ReportPage() {
               <Award className="text-yellow-400" /> Project Objective & Vision
             </h2>
             <p className="text-lg text-white/90 leading-relaxed mb-4">
-              The goal of the <strong>March Not-So-Madness</strong> project is to build an extensible, zero-leakage NCAA March Madness machine learning prediction pipeline. We optimize feature engineering to maximize pre-game predictive signal before fine-tuning classification models for tournament matchups.
+              The goal of the <strong>NCAA March not-so Madness</strong> project is to build an extensible, zero-leakage machine learning prediction pipeline. We optimize feature engineering to maximize pre-game predictive signal before fine-tuning classification models for tournament matchups.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
