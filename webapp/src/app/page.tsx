@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Trophy, Swords, Calculator } from "lucide-react";
-import teamsData from "../data/teams2026.json";
-import { Team, PredictionResult, defaultPredictor } from "../lib/predictor";
+import Link from "next/link";
+import { Trophy, Swords, Calculator, Users, LineChart, Sparkles } from "lucide-react";
+import { enrichedTeams, EnrichedTeam } from "../lib/teamsData";
+import { PredictionResult, defaultPredictor } from "../lib/predictor";
 
 export default function Home() {
   const [team1Id, setTeam1Id] = useState<string>("");
@@ -20,20 +21,19 @@ export default function Home() {
       return;
     }
 
-    const team1 = teamsData.find((t) => t.TeamID.toString() === team1Id) as Team;
-    const team2 = teamsData.find((t) => t.TeamID.toString() === team2Id) as Team;
+    const team1 = enrichedTeams.find((t) => t.TeamID.toString() === team1Id) as EnrichedTeam;
+    const team2 = enrichedTeams.find((t) => t.TeamID.toString() === team2Id) as EnrichedTeam;
 
-    // Use modular predictor service (easily pluggable with ML algorithms in the future)
     const result = defaultPredictor.predict(team1, team2);
     setPrediction(result);
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-6 md:p-12 pt-6 md:pt-10 relative overflow-hidden">
-      <div className="z-10 max-w-4xl w-full flex flex-col items-center">
+    <main className="flex flex-col items-center p-4 md:p-8 max-w-5xl mx-auto">
+      <div className="w-full flex flex-col items-center">
 
-        {/* Logo Header */}
-        <div className="chalk-border px-8 py-6 md:py-8 text-center w-full mb-8">
+        {/* Hero Header */}
+        <div className="chalk-border px-8 py-6 md:py-8 text-center w-full mb-8 bg-black/20">
           <h1 className="text-3xl md:text-5xl font-bold chalk-text uppercase tracking-wider flex items-center justify-center flex-wrap gap-2">
             <span>NCAA MARCH</span>
             <span className="text-xl md:text-2xl opacity-80 font-normal italic lowercase border-b-2 border-white/40 px-2 py-0.5 my-1 bg-white/5 rounded">
@@ -42,45 +42,94 @@ export default function Home() {
             <span>MADNESS</span>
           </h1>
           <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-2">
-            Match Predictor
+            AI-Powered Match Predictor & Tournament Simulator
           </p>
         </div>
 
+        {/* Quick Navigation Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-8">
+          <Link
+            href="/teams"
+            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-blue-600/40 border border-blue-400/40 flex items-center justify-center text-blue-300 group-hover:scale-110 transition-transform">
+              <Users size={22} />
+            </div>
+            <div>
+              <h3 className="font-bold chalk-text group-hover:text-yellow-300 transition-colors">2026 Teams</h3>
+              <p className="text-xs text-white/60">Browse 64 tournament teams</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/bracket"
+            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-yellow-600/40 border border-yellow-400/40 flex items-center justify-center text-yellow-300 group-hover:scale-110 transition-transform">
+              <Trophy size={22} />
+            </div>
+            <div>
+              <h3 className="font-bold chalk-text group-hover:text-yellow-300 transition-colors">Bracket Simulator</h3>
+              <p className="text-xs text-white/60">Simulate 2026 tournament</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/insights"
+            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-emerald-600/40 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
+              <LineChart size={22} />
+            </div>
+            <div>
+              <h3 className="font-bold chalk-text group-hover:text-yellow-300 transition-colors">Model Insights</h3>
+              <p className="text-xs text-white/60">Feature weights & metrics</p>
+            </div>
+          </Link>
+        </div>
+
         {/* Team Selectors */}
-        <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full justify-between items-end mb-8">
-          {/* Team 1 Selector */}
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full justify-between items-end mb-8 bg-black/20 p-6 rounded-xl border border-white/20">
+          
+          {/* Home Team */}
           <div className="flex flex-col flex-1 w-full gap-2">
-            <label className="text-xl chalk-text ml-1 font-semibold">Home Team</label>
+            <label className="text-xl chalk-text font-semibold flex items-center gap-2">
+              <Sparkles size={18} className="text-yellow-400" />
+              <span>Team 1 (Home)</span>
+            </label>
             <select
               value={team1Id}
               onChange={(e) => setTeam1Id(e.target.value)}
               className="chalk-input p-3.5 text-lg w-full"
             >
               <option value="" disabled className="text-gray-900 bg-gray-200">Select Team...</option>
-              {teamsData.map((team) => (
+              {enrichedTeams.map((team) => (
                 <option key={team.TeamID} value={team.TeamID} className="text-gray-900 bg-gray-100">
-                  {team.TeamName}
+                  #{team.Seed} {team.TeamName} ({team.Region})
                 </option>
               ))}
             </select>
           </div>
 
           <div className="hidden md:flex pb-3 text-3xl chalk-text px-2 items-center justify-center opacity-80">
-            <Swords size={38} />
+            <Swords size={38} className="text-yellow-400" />
           </div>
 
-          {/* Team 2 Selector */}
+          {/* Away Team */}
           <div className="flex flex-col flex-1 w-full gap-2">
-            <label className="text-xl chalk-text ml-1 font-semibold">Away Team</label>
+            <label className="text-xl chalk-text font-semibold flex items-center gap-2">
+              <Sparkles size={18} className="text-blue-400" />
+              <span>Team 2 (Away)</span>
+            </label>
             <select
               value={team2Id}
               onChange={(e) => setTeam2Id(e.target.value)}
               className="chalk-input p-3.5 text-lg w-full"
             >
               <option value="" disabled className="text-gray-900 bg-gray-200">Select Team...</option>
-              {teamsData.map((team) => (
+              {enrichedTeams.map((team) => (
                 <option key={team.TeamID} value={team.TeamID} className="text-gray-900 bg-gray-100">
-                  {team.TeamName}
+                  #{team.Seed} {team.TeamName} ({team.Region})
                 </option>
               ))}
             </select>
@@ -89,7 +138,7 @@ export default function Home() {
 
         <button
           onClick={handlePredict}
-          className="chalk-button px-9 py-3.5 text-xl font-bold flex items-center gap-3 mb-8 shadow-lg"
+          className="chalk-button px-9 py-3.5 text-xl font-bold flex items-center gap-3 mb-8 shadow-lg bg-yellow-400/20 text-yellow-300 border-yellow-400/60 hover:bg-yellow-400/30"
         >
           <Calculator size={28} />
           PREDICT MATCHUP
@@ -97,26 +146,26 @@ export default function Home() {
 
         {/* Prediction Results Component */}
         {prediction && (
-          <div className="chalk-border p-6 w-full max-w-2xl bg-black/20 animate-fade-in relative">
-            <h2 className="text-3xl text-center chalk-text mb-4 flex justify-center items-center gap-3">
+          <div className="chalk-border p-6 w-full max-w-2xl bg-black/30 animate-fade-in relative">
+            <h2 className="text-3xl text-center chalk-text mb-4 flex justify-center items-center gap-3 text-yellow-300">
               <Trophy className="text-yellow-400" size={32} />
               <span>{prediction.winner.TeamName} Favored!</span>
               <Trophy className="text-yellow-400" size={32} />
             </h2>
 
             {/* Win Probability Bar */}
-            <div className="w-full bg-black/40 h-6 rounded-full overflow-hidden mb-6 flex border border-white/30 font-mono">
+            <div className="w-full bg-black/50 h-7 rounded-full overflow-hidden mb-6 flex border border-white/30 font-mono">
               <div
                 style={{ width: `${(prediction.probTeam1 * 100).toFixed(1)}%` }}
-                className="bg-emerald-600/80 text-xs text-white flex items-center justify-center font-bold font-mono transition-all duration-500"
+                className="bg-emerald-600/80 text-xs text-white flex items-center justify-center font-bold transition-all duration-500"
               >
-                {(prediction.probTeam1 * 100).toFixed(1)}%
+                {prediction.team1.TeamName}: {(prediction.probTeam1 * 100).toFixed(1)}%
               </div>
               <div
                 style={{ width: `${(prediction.probTeam2 * 100).toFixed(1)}%` }}
-                className="bg-blue-600/80 text-xs text-white flex items-center justify-center font-bold font-mono transition-all duration-500"
+                className="bg-blue-600/80 text-xs text-white flex items-center justify-center font-bold transition-all duration-500"
               >
-                {(prediction.probTeam2 * 100).toFixed(1)}%
+                {prediction.team2.TeamName}: {(prediction.probTeam2 * 100).toFixed(1)}%
               </div>
             </div>
 
@@ -142,7 +191,7 @@ export default function Home() {
             </div>
 
             {/* Informative Stats Breakdown */}
-            <div className="grid grid-cols-2 gap-4 pt-2 text-base md:text-lg opacity-90">
+            <div className="grid grid-cols-2 gap-4 pt-4 text-base md:text-lg opacity-90">
               <div className="flex flex-col bg-white/5 p-3 rounded border border-white/10">
                 <span className="text-xs uppercase tracking-wider text-white/60">Expected Point Spread</span>
                 <span className="font-bold text-lg text-emerald-300">
