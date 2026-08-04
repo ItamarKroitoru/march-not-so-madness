@@ -12,6 +12,8 @@ export type PredictionResult = {
   probTeam1: number;
   probTeam2: number;
   ratingDiff: number;
+  spread: number;
+  confidence: string;
 };
 
 export interface MatchPredictor {
@@ -35,6 +37,16 @@ export class RatingMatchPredictor implements MatchPredictor {
     const winner = probTeam1 >= 0.5 ? team1 : team2;
     const loser = probTeam1 >= 0.5 ? team2 : team1;
 
+    // Estimate point spread (~0.25 pts per rating diff point)
+    const spread = Math.abs(ratingDiff) * 0.25;
+
+    // Calculate human-readable confidence label
+    const maxProb = Math.max(probTeam1, probTeam2);
+    let confidence = "Toss-Up";
+    if (maxProb >= 0.75) confidence = "Heavy Favorite";
+    else if (maxProb >= 0.62) confidence = "Moderate Favorite";
+    else if (maxProb >= 0.53) confidence = "Slight Advantage";
+
     return {
       team1,
       team2,
@@ -43,6 +55,8 @@ export class RatingMatchPredictor implements MatchPredictor {
       probTeam1,
       probTeam2,
       ratingDiff,
+      spread,
+      confidence,
     };
   }
 }
