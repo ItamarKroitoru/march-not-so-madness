@@ -42,7 +42,7 @@ export default function ReportPage() {
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as "summary" | "data" | "features" | "evaluation")}
               className={`px-4 py-2.5 rounded-lg text-base font-bold flex items-center gap-2 transition-all ${
                 isActive
                   ? "bg-yellow-400 text-gray-950 font-bold shadow-lg"

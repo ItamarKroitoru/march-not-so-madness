@@ -1,6 +1,6 @@
 "use client";
 
-import { LineChart, Cpu, CheckCircle2, BarChart2, Zap, Layers, Sparkles } from "lucide-react";
+import { LineChart, Cpu, CheckCircle2, BarChart2, Sparkles } from "lucide-react";
 
 export default function InsightsPage() {
   const featureWeights = [

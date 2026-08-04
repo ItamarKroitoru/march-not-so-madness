@@ -35,7 +35,7 @@ export default function BracketPage() {
         [6, 11], [3, 14], [7, 10], [2, 15]
       ];
 
-      let currentRoundTeams: EnrichedTeam[] = [];
+      const currentRoundTeams: EnrichedTeam[] = [];
       const matchups: Matchup[] = [];
 
       // Round of 64
