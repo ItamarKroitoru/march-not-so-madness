@@ -19,8 +19,8 @@ export default function TeamsPage() {
         return matchesSearch && matchesRegion;
       })
       .sort((a, b) => {
-        let valA = a[sortBy] ?? 0;
-        let valB = b[sortBy] ?? 0;
+        const valA = (a[sortBy as keyof EnrichedTeam] as number) ?? 0;
+        const valB = (b[sortBy as keyof EnrichedTeam] as number) ?? 0;
         if (typeof valA === "number" && typeof valB === "number") {
           return sortOrder === "desc" ? valB - valA : valA - valB;
         }
