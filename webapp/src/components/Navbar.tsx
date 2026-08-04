@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Swords, Trophy, Users, LineChart, Menu, X, Sparkles } from "lucide-react";
+import { Swords, Trophy, Users, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -14,6 +14,7 @@ export function Navbar() {
     { href: "/teams", label: "Teams Explorer", icon: Users },
     { href: "/bracket", label: "Bracket Simulator", icon: Trophy },
     { href: "/insights", label: "Model Insights", icon: LineChart },
+    { href: "/report", label: "Report", icon: FileText },
   ];
 
   return (
@@ -34,7 +35,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Links */}
-        <nav className="hidden md:flex items-center gap-2">
+        <nav className="hidden md:flex items-center gap-1 lg:gap-2">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -43,13 +44,13 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-4 py-2 rounded-lg text-sm md:text-base font-medium flex items-center gap-2 transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-sm md:text-base font-medium flex items-center gap-1.5 transition-all ${
                   isActive
                     ? "bg-white/20 text-yellow-300 border border-yellow-300/40 shadow-inner font-semibold"
                     : "text-white/80 hover:text-white hover:bg-white/10"
                 }`}
               >
-                <Icon size={18} className={isActive ? "text-yellow-300" : "text-white/70"} />
+                <Icon size={16} className={isActive ? "text-yellow-300" : "text-white/70"} />
                 <span>{link.label}</span>
               </Link>
             );

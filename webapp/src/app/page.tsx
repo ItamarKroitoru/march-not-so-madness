@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Trophy, Swords, Calculator, Users, LineChart, Sparkles } from "lucide-react";
+import { Trophy, Swords, Calculator, Users, LineChart, FileText, Sparkles } from "lucide-react";
 import { enrichedTeams, EnrichedTeam } from "../lib/teamsData";
 import { PredictionResult, defaultPredictor } from "../lib/predictor";
 
@@ -47,17 +47,17 @@ export default function Home() {
         </div>
 
         {/* Quick Navigation Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-8">
           <Link
             href="/teams"
             className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
           >
             <div className="w-10 h-10 rounded-lg bg-blue-600/40 border border-blue-400/40 flex items-center justify-center text-blue-300 group-hover:scale-110 transition-transform">
-              <Users size={22} />
+              <Users size={20} />
             </div>
             <div>
-              <h3 className="font-bold chalk-text group-hover:text-yellow-300 transition-colors">2026 Teams</h3>
-              <p className="text-xs text-white/60">Browse 64 tournament teams</p>
+              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Teams</h3>
+              <p className="text-[11px] text-white/60">Browse 64 teams</p>
             </div>
           </Link>
 
@@ -66,11 +66,11 @@ export default function Home() {
             className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
           >
             <div className="w-10 h-10 rounded-lg bg-yellow-600/40 border border-yellow-400/40 flex items-center justify-center text-yellow-300 group-hover:scale-110 transition-transform">
-              <Trophy size={22} />
+              <Trophy size={20} />
             </div>
             <div>
-              <h3 className="font-bold chalk-text group-hover:text-yellow-300 transition-colors">Bracket Simulator</h3>
-              <p className="text-xs text-white/60">Simulate 2026 tournament</p>
+              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Bracket</h3>
+              <p className="text-[11px] text-white/60">Simulate 2026</p>
             </div>
           </Link>
 
@@ -79,11 +79,24 @@ export default function Home() {
             className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
           >
             <div className="w-10 h-10 rounded-lg bg-emerald-600/40 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
-              <LineChart size={22} />
+              <LineChart size={20} />
             </div>
             <div>
-              <h3 className="font-bold chalk-text group-hover:text-yellow-300 transition-colors">Model Insights</h3>
-              <p className="text-xs text-white/60">Feature weights & metrics</p>
+              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Insights</h3>
+              <p className="text-[11px] text-white/60">Feature weights</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/report"
+            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-purple-600/40 border border-purple-400/40 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform">
+              <FileText size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Report</h3>
+              <p className="text-[11px] text-white/60">Pipeline report</p>
             </div>
           </Link>
         </div>
