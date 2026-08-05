@@ -1,18 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #172e20; /* Vintage Chalkboard Slate Green */
-  --foreground: #f4f6f4; /* Off-White Chalk */
+  --background: #172e20; /* Vintage Slate Green */
+  --foreground: #f4f6f4;
 }
 
 body {
   color: var(--foreground);
   background-color: var(--background);
-  font-family: 'Architects Daughter', cursive, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
   /* Vintage Chalkboard Texture: Slate base + Eraser Wipe Streaks + Chalk Haze */
   background-image: 

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Trophy, Swords, Calculator, Users, LineChart, FileText, Sparkles } from "lucide-react";
+import { Trophy, Swords, Calculator, Sparkles } from "lucide-react";
 import { enrichedTeams, EnrichedTeam } from "../lib/teamsData";
 import { PredictionResult, defaultPredictor } from "../lib/predictor";
 
@@ -34,72 +33,12 @@ export default function Home() {
 
         {/* Hero Header */}
         <div className="chalk-border px-8 py-6 md:py-8 text-center w-full mb-8 bg-black/20">
-          <h1 className="text-3xl md:text-5xl font-bold chalk-text uppercase tracking-wider flex items-center justify-center flex-wrap gap-2">
-            <span>NCAA MARCH</span>
-            <span className="text-xl md:text-2xl opacity-80 font-normal italic lowercase border-b-2 border-white/40 px-2 py-0.5 my-1 bg-white/5 rounded">
-              not so
-            </span>
-            <span>MADNESS</span>
+          <h1 className="text-3xl md:text-5xl font-bold chalk-text uppercase tracking-wider text-center">
+            Match Predictor
           </h1>
-          <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-2">
-            AI-Powered Match Predictor & Tournament Simulator
-          </p>
         </div>
 
-        {/* Quick Navigation Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-8">
-          <Link
-            href="/teams"
-            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-blue-600/40 border border-blue-400/40 flex items-center justify-center text-blue-300 group-hover:scale-110 transition-transform">
-              <Users size={20} />
-            </div>
-            <div>
-              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Teams</h3>
-              <p className="text-[11px] text-white/60">Browse 64 teams</p>
-            </div>
-          </Link>
 
-          <Link
-            href="/bracket"
-            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-yellow-600/40 border border-yellow-400/40 flex items-center justify-center text-yellow-300 group-hover:scale-110 transition-transform">
-              <Trophy size={20} />
-            </div>
-            <div>
-              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Bracket</h3>
-              <p className="text-[11px] text-white/60">Simulate 2026</p>
-            </div>
-          </Link>
-
-          <Link
-            href="/insights"
-            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-emerald-600/40 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
-              <LineChart size={20} />
-            </div>
-            <div>
-              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Insights</h3>
-              <p className="text-[11px] text-white/60">Feature weights</p>
-            </div>
-          </Link>
-
-          <Link
-            href="/report"
-            className="chalk-border p-4 bg-black/30 hover:bg-white/10 transition-all flex items-center gap-3 group"
-          >
-            <div className="w-10 h-10 rounded-lg bg-purple-600/40 border border-purple-400/40 flex items-center justify-center text-purple-300 group-hover:scale-110 transition-transform">
-              <FileText size={20} />
-            </div>
-            <div>
-              <h3 className="font-bold chalk-text text-sm md:text-base group-hover:text-yellow-300 transition-colors">Report</h3>
-              <p className="text-[11px] text-white/60">Pipeline report</p>
-            </div>
-          </Link>
-        </div>
 
         {/* Team Selectors */}
         <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full justify-between items-end mb-8 bg-black/20 p-6 rounded-xl border border-white/20">
