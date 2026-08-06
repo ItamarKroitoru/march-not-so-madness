@@ -190,7 +190,13 @@ def preprocess_X(
     # 1. Copy raw dataframe
     X = raw_X.copy()
 
-    # 2. Calculate differentials dynamically
+    # 3. Drop non-predictive metadata
+    columns_to_drop = [
+        column for column in METADATA_COLUMNS if column in X.columns
+    ]
+    X = X.drop(columns=columns_to_drop)
+
+    # 3. Calculate differentials dynamically
     X = calculate_feature_differentials(
         X,
         prefix1=prefix1,
@@ -199,12 +205,6 @@ def preprocess_X(
         drop_base_features=drop_base_features,
         exclude_cols=exclude_cols
     )
-
-    # 3. Drop non-predictive metadata
-    columns_to_drop = [
-        column for column in METADATA_COLUMNS if column in X.columns
-    ]
-    X = X.drop(columns=columns_to_drop)
 
     # 4. Check for unhandled non-numeric columns
     non_numeric_columns = [
