@@ -40,4 +40,8 @@ out/
 
 # Large dataset files (>100MB safety if added in the future)
 data/MMasseyOrdinals.csv
+data/X_train.csv
+data/X_test.csv
+data/y_train.csv
+data/y_test.csv
 
