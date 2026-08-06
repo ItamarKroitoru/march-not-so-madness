@@ -105,13 +105,38 @@ def build_season_features(
     }
 
 
+def build_opponent_strength_features(
+    team_state: TeamState,
+    prefix: str,
+) -> dict:
+    """
+    Build weighted full-season opponent-strength features.
+
+    Each opponent is weighted by how many games that opponent
+    had completed before the game.
+    """
+    total_weight = team_state.total_opponent_weight
+
+    return {
+        f"{prefix}_avg_opponent_win_pct": safe_divide(
+            team_state.weighted_opponent_win_pct,
+            total_weight,
+        ),
+
+        f"{prefix}_avg_opponent_point_diff_pg": safe_divide(
+            team_state.weighted_opponent_point_diff_pg,
+            total_weight,
+        ),
+    }
+
 def build_recent_window_features(
     recent_games: Sequence[GameStats],
     prefix: str,
     window_size: int,
 ) -> dict:
     """
-    Build recent-form features for one rolling game window.
+    Build recent-form and recent-opponent-strength features
+    for one rolling game window.
     """
     games = list(recent_games)[-window_size:]
     games_played = len(games)
@@ -155,6 +180,24 @@ def build_recent_window_features(
 
     personal_fouls = sum(
         game.personal_fouls
+        for game in games
+    )
+
+    # Opponent-strength snapshots
+    total_opponent_weight = sum(
+        game.opponent_games_played
+        for game in games
+    )
+
+    weighted_opponent_win_pct = sum(
+        game.opponent_games_played
+        * game.opponent_win_pct
+        for game in games
+    )
+
+    weighted_opponent_point_diff_pg = sum(
+        game.opponent_games_played
+        * game.opponent_point_diff_pg
         for game in games
     )
 
@@ -218,7 +261,20 @@ def build_recent_window_features(
             personal_fouls,
             games_played,
         ),
-    }
+
+        # Recent opponent strength
+        f"{feature_prefix}_avg_opponent_win_pct":
+            safe_divide(
+                weighted_opponent_win_pct,
+                total_opponent_weight,
+            ),
+
+        f"{feature_prefix}_avg_opponent_point_diff_pg":
+            safe_divide(
+                weighted_opponent_point_diff_pg,
+                total_opponent_weight,
+            ),
+        }
 
 
 def build_recent_5_features(
@@ -350,6 +406,10 @@ def build_team_features(
             prefix=prefix,
         ),
         **build_efficiency_features(
+            team_state=team_state,
+            prefix=prefix,
+        ),
+        **build_opponent_strength_features(
             team_state=team_state,
             prefix=prefix,
         ),

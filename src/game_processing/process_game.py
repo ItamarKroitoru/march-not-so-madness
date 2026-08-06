@@ -8,6 +8,9 @@ def process_game(
     """
     Update the winner and loser TeamState objects
     after one completed detailed-results game.
+
+    Opponent-strength values are captured before either
+    team state is updated.
     """
     winner_id = int(game["WTeamID"])
     loser_id = int(game["LTeamID"])
@@ -32,6 +35,43 @@ def process_game(
     winner_state = team_states[winner_id]
     loser_state = team_states[loser_id]
 
+    # Capture both teams' pregame strength before
+    # either state is updated.
+    winner_games_played = winner_state.games_played
+    loser_games_played = loser_state.games_played
+
+    winner_win_pct = (
+        winner_state.wins / winner_games_played
+        if winner_games_played > 0
+        else 0.0
+    )
+
+    loser_win_pct = (
+        loser_state.wins / loser_games_played
+        if loser_games_played > 0
+        else 0.0
+    )
+
+    winner_point_diff_pg = (
+        (
+            winner_state.total_points_scored
+            - winner_state.total_points_allowed
+        )
+        / winner_games_played
+        if winner_games_played > 0
+        else 0.0
+    )
+
+    loser_point_diff_pg = (
+        (
+            loser_state.total_points_scored
+            - loser_state.total_points_allowed
+        )
+        / loser_games_played
+        if loser_games_played > 0
+        else 0.0
+    )
+
     winner_state.update_after_game(
         points_scored=winner_score,
         points_allowed=loser_score,
@@ -50,6 +90,11 @@ def process_game(
         steals=int(game["WStl"]),
         blocks=int(game["WBlk"]),
         personal_fouls=int(game["WPF"]),
+
+        # The winner's opponent was the loser.
+        opponent_games_played=loser_games_played,
+        opponent_win_pct=loser_win_pct,
+        opponent_point_diff_pg=loser_point_diff_pg,
     )
 
     loser_state.update_after_game(
@@ -70,4 +115,9 @@ def process_game(
         steals=int(game["LStl"]),
         blocks=int(game["LBlk"]),
         personal_fouls=int(game["LPF"]),
+
+        # The loser's opponent was the winner.
+        opponent_games_played=winner_games_played,
+        opponent_win_pct=winner_win_pct,
+        opponent_point_diff_pg=winner_point_diff_pg,
     )

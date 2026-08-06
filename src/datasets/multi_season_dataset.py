@@ -24,6 +24,7 @@ def build_multi_season_dataset(
 
     total_rows_built = 0
     total_raw_games = 0
+    total_games_skipped = 0
 
     for season in seasons:
         print(f"Starting season {season}...")
@@ -34,21 +35,24 @@ def build_multi_season_dataset(
         X_season, y_season = build_Xy_dataset(season)
 
         rows_built = len(X_season)
+        games_skipped = expected_games - rows_built
 
         print(
             f"Finished season {season}: "
             f"{rows_built} rows built, "
+            f"{games_skipped} skipped, "
             f"{expected_games} raw games"
         )
 
-        assert rows_built == expected_games
-        assert len(y_season) == expected_games
+        assert len(y_season) == rows_built
+        assert rows_built + games_skipped == expected_games
 
         X_parts.append(X_season)
         y_parts.append(y_season)
 
         total_rows_built += rows_built
         total_raw_games += expected_games
+        total_games_skipped += games_skipped
 
     X = pd.concat(
         X_parts,
@@ -62,12 +66,13 @@ def build_multi_season_dataset(
 
     assert len(X) == total_rows_built
     assert len(y) == total_rows_built
-    assert total_rows_built == total_raw_games
+    assert total_rows_built + total_games_skipped == total_raw_games
 
     print()
     print("All seasons complete.")
     print(f"Seasons processed: {len(seasons)}")
     print(f"Total rows built: {total_rows_built}")
+    print(f"Total games skipped: {total_games_skipped}")
     print(f"Total raw games: {total_raw_games}")
     print("All row-count checks passed.")
 

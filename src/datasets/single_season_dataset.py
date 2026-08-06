@@ -115,19 +115,25 @@ def build_Xy_dataset(
         team_1_state = team_states[team_1_id]
         team_2_state = team_states[team_2_id]
 
-        feature_row = build_game_feature_row(
-            team_1_state=team_1_state,
-            team_2_state=team_2_state,
-            team_name_lookup=team_name_lookup,
-            season=int(game["Season"]),
-            day_num=int(game["DayNum"]),
-            team_1_location=team_1_location,
-        )
+        # A usable pregame row requires both teams to have
+        # completed at least one previous game.
+        if (
+            team_1_state.games_played > 0
+            and team_2_state.games_played > 0
+        ):
+            feature_row = build_game_feature_row(
+                team_1_state=team_1_state,
+                team_2_state=team_2_state,
+                team_name_lookup=team_name_lookup,
+                season=int(game["Season"]),
+                day_num=int(game["DayNum"]),
+                team_1_location=team_1_location,
+            )
 
-        feature_rows.append(feature_row)
-        labels.append(label)
+            feature_rows.append(feature_row)
+            labels.append(label)
 
-        # Update states only after saving the pregame row.
+        # Always update the states, even when the row was excluded.
         process_game(
             game=game,
             team_states=team_states,
