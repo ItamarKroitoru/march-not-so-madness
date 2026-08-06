@@ -31,6 +31,10 @@ class GameStats:
     blocks: int
     personal_fouls: int
 
+    opponent_games_played: int
+    opponent_win_pct: float | None
+    opponent_point_diff_pg: float | None
+
 
 class TeamState:
     """
@@ -75,7 +79,9 @@ class TeamState:
         neutral_wins: int = 0,
         current_win_streak: int = 0,
         current_loss_streak: int = 0,
-    ):
+        total_opponent_weight: int = 0,
+        weighted_opponent_win_pct: float = 0.0,
+        weighted_opponent_point_diff_pg: float = 0.0,    ):
         self.team_id = team_id
 
         # Overall results
@@ -114,6 +120,12 @@ class TeamState:
         self.neutral_games = neutral_games
         self.neutral_wins = neutral_wins
 
+        # Weighted opponent-strength history
+        self.total_opponent_weight = total_opponent_weight
+        self.weighted_opponent_win_pct = weighted_opponent_win_pct
+        self.weighted_opponent_point_diff_pg = (
+            weighted_opponent_point_diff_pg
+        )
         # Current momentum
         self.current_win_streak = current_win_streak
         self.current_loss_streak = current_loss_streak
@@ -142,9 +154,15 @@ class TeamState:
         steals: int,
         blocks: int,
         personal_fouls: int,
+        opponent_games_played: int,
+        opponent_win_pct: float,
+        opponent_point_diff_pg: float,
     ) -> None:
         """
         Update this team's state after one completed game.
+
+        Opponent statistics represent the opponent's state
+        immediately before this game.
 
         location:
             H = home
@@ -190,6 +208,20 @@ class TeamState:
         self.total_blocks += blocks
         self.total_personal_fouls += personal_fouls
 
+        # Weighted opponent-strength history
+        opponent_weight = opponent_games_played
+
+        self.total_opponent_weight += opponent_weight
+
+        self.weighted_opponent_win_pct += (
+            opponent_weight
+            * opponent_win_pct
+        )
+
+        self.weighted_opponent_point_diff_pg += (
+            opponent_weight
+            * opponent_point_diff_pg
+        )
         # Location-specific results
         if location == "H":
             self.home_games += 1
@@ -229,6 +261,8 @@ class TeamState:
                 steals=steals,
                 blocks=blocks,
                 personal_fouls=personal_fouls,
+                opponent_games_played=opponent_games_played,
+                opponent_win_pct=opponent_win_pct,
+                opponent_point_diff_pg=opponent_point_diff_pg,
             )
         )
-
