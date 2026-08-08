@@ -266,3 +266,10 @@ class TeamState:
                 opponent_point_diff_pg=opponent_point_diff_pg,
             )
         )
+
+    def __repr__(self) -> str:
+        fields = ",\n    ".join(
+            f"{key}={value!r}"
+            for key, value in vars(self).items()
+        )
+        return f"TeamState(\n    {fields}\n)"

@@ -1,13 +1,9 @@
 import pandas as pd
 
-from src.data_loading.loaders import (
-    get_regular_season_games,
-    get_teams,
-)
+from src.data_loading.loaders import get_regular_season_games
 from src.state.team_state import TeamState
 from src.game_processing.process_game import process_game
 from src.features.game_features import build_game_feature_row
-
 
 def get_team_ids(season_games: pd.DataFrame) -> set[int]:
     """
@@ -39,36 +35,24 @@ def initialize_team_states(
 
 def build_Xy_dataset(
     season: int,
-) -> tuple[pd.DataFrame, pd.Series]:
+    team_name_lookup: dict[int, str],
+) -> tuple[pd.DataFrame, pd.Series, dict[int, TeamState]]:    
     """
     Replay one regular season and construct X and y.
 
-    Team ordering:
-        team_1 = lower TeamID
-        team_2 = higher TeamID
-
-    team_1_location:
-         1 = team_1 is home
-        -1 = team_1 is away
-         0 = neutral
-
+    Returns
+    -------
+    X:
+        Pregame feature rows.
     y:
-        1 if team_1 won
-        0 if team_2 won
+        Game outcomes.
+    team_states:
+        Final state of every team after the regular season.
     """
     season_games = get_regular_season_games(season)
 
     team_ids = get_team_ids(season_games)
     team_states = initialize_team_states(team_ids)
-
-    teams = get_teams()
-
-    team_name_lookup = dict(
-        zip(
-            teams["TeamID"],
-            teams["TeamName"],
-        )
-    )
 
     feature_rows = []
     labels = []
@@ -146,4 +130,4 @@ def build_Xy_dataset(
         name="team_1_won",
     )
 
-    return X, y
+    return X, y, team_states
