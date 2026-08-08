@@ -3,8 +3,10 @@ import pandas as pd
 from src.data_loading.loaders import (
     get_regular_season_games,
     get_regular_seasons,
+    get_teams,
 )
 from src.datasets.single_season_dataset import build_Xy_dataset
+from src.features.team_features import build_team_features
 
 
 def build_multi_season_dataset(
@@ -21,10 +23,20 @@ def build_multi_season_dataset(
 
     X_parts = []
     y_parts = []
+    final_state_rows = []
 
     total_rows_built = 0
     total_raw_games = 0
     total_games_skipped = 0
+
+    teams = get_teams()
+
+    team_name_lookup = dict(
+        zip(
+            teams["TeamID"],
+            teams["TeamName"],
+        )
+    )
 
     for season in seasons:
         print(f"Starting season {season}...")
@@ -32,7 +44,10 @@ def build_multi_season_dataset(
         raw_season_games = get_regular_season_games(season)
         expected_games = len(raw_season_games)
 
-        X_season, y_season = build_Xy_dataset(season)
+        X_season, y_season, final_team_states = build_Xy_dataset(
+            season=season,
+            team_name_lookup=team_name_lookup,
+        )
 
         rows_built = len(X_season)
         games_skipped = expected_games - rows_built
@@ -53,6 +68,19 @@ def build_multi_season_dataset(
         total_rows_built += rows_built
         total_raw_games += expected_games
         total_games_skipped += games_skipped
+
+        for team_id, team_state in final_team_states.items():
+            final_state_rows.append(
+                {
+                    "TeamID": team_id,
+                    "TeamName": team_name_lookup[team_id],
+                    "Season": season,
+                    **build_team_features(
+                        team_state=team_state,
+                        prefix="team",
+                    ),
+                }
+            )
 
     X = pd.concat(
         X_parts,
@@ -76,4 +104,6 @@ def build_multi_season_dataset(
     print(f"Total raw games: {total_raw_games}")
     print("All row-count checks passed.")
 
-    return X, y
+    final_team_states_df = pd.DataFrame(final_state_rows)
+
+    return X, y, final_team_states_df
