@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -12,7 +12,7 @@
 body {
   color: var(--foreground);
   background-color: var(--background);
-  font-family: 'Architects Daughter', cursive, sans-serif;
+  font-family: 'Comic Neue', cursive, sans-serif;
   
   /* Vintage Chalkboard Texture: Slate base + Eraser Wipe Streaks + Chalk Haze */
   background-image: 
@@ -61,3 +61,43 @@ body {
   background: rgba(255,255,255,0.2);
   transform: scale(1.02) rotate(-1deg);
 }
+
+/* Custom NCAA Bracket Styling */
+.ncaa-header-gradient {
+  background: linear-gradient(90deg, #1e3a8a 0%, #0f172a 40%, #0f172a 60%, #1e3a8a 100%);
+  border: 2px solid rgba(239, 68, 68, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.bracket-container {
+  min-width: 1280px;
+}
+
+/* Bracket slot line connectors */
+.bracket-line-left-top {
+  border-right: 2px solid rgba(255, 255, 255, 0.35);
+  border-top: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.bracket-line-left-bottom {
+  border-right: 2px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.bracket-line-right-top {
+  border-left: 2px solid rgba(255, 255, 255, 0.35);
+  border-top: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.bracket-line-right-bottom {
+  border-left: 2px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.team-slot-winner {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.4) 100%);
+  border-color: rgba(52, 211, 153, 0.8) !important;
+  color: #ffffff;
+  font-weight: 700;
+}
+
