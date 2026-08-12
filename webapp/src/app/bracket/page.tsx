@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { enrichedTeams, EnrichedTeam } from "../../lib/teamsData";
 import { predictMatchup } from "../../lib/predictor";
-import { Trophy, Play, RefreshCw, MapPin, Tv, Eye, ChevronRight } from "lucide-react";
+import { Trophy, Play, RefreshCw, MapPin } from "lucide-react";
 
 interface Matchup {
   id: string;
