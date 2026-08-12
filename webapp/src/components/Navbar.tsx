@@ -3,16 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Swords, Trophy, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
+import { LayoutDashboard, Swords, Trophy, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: "/", label: "Match Predictor", icon: Swords },
-    { href: "/bracket", label: "Bracket Simulator", icon: Trophy },
-    { href: "/insights", label: "Model Insights", icon: LineChart },
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/predictor", label: "Predictor", icon: Swords },
+    { href: "/bracket", label: "Bracket", icon: Trophy },
+    { href: "/insights", label: "Insights", icon: LineChart },
     { href: "/report", label: "Report", icon: FileText },
   ];
 
@@ -29,7 +30,7 @@ export function Navbar() {
             <span className="font-bold text-base md:text-lg lg:text-xl chalk-text tracking-wide text-white whitespace-nowrap flex items-center gap-1.5">
               NCAA MARCH <span className="italic font-light opacity-80 text-yellow-200">not-so</span> MADNESS
             </span>
-            <span className="text-[10px] md:text-xs text-white/60 font-mono tracking-wider">Needle in a Haystack - HUJI</span>
+            <span className="text-[10px] md:text-xs text-white/60 font-mono tracking-wider">Needle in a Haystack &bull; HUJI</span>
           </div>
         </Link>
 
