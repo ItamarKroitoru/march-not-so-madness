@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { enrichedTeams, EnrichedTeam } from "../../lib/teamsData";
 import { predictMatchup } from "../../lib/predictor";
-import { Trophy, Play, RefreshCw, Shield, MapPin, Tv, Eye, ChevronRight } from "lucide-react";
+import { Trophy, Play, RefreshCw, MapPin, Tv, Eye, ChevronRight } from "lucide-react";
 
 interface Matchup {
   id: string;
@@ -46,7 +46,6 @@ export default function BracketPage() {
     champProb2?: number;
   }>({});
   const [champion, setChampion] = useState<EnrichedTeam | null>(null);
-  const [viewMode, setViewMode] = useState<string>("full");
 
   const handleSimulate = () => {
     // Simulate 4 Regions
@@ -178,7 +177,7 @@ export default function BracketPage() {
   const renderTeamBox = (team?: EnrichedTeam, isWinner?: boolean, prob?: number, align: "left" | "right" = "left") => {
     if (!team) {
       return (
-        <div className="h-7 bg-white/5 border border-white/10 rounded px-2 flex items-center justify-between text-xs text-white/30 italic">
+        <div className={`h-7 bg-white/5 border border-white/10 rounded px-2 flex items-center text-xs text-white/30 italic ${align === "right" ? "justify-end" : "justify-start"}`}>
           TBD
         </div>
       );
@@ -190,7 +189,7 @@ export default function BracketPage() {
           isWinner
             ? "team-slot-winner bg-emerald-950/80 border-emerald-400 text-white font-extrabold shadow-sm"
             : "bg-black/40 border-white/20 text-white/80 hover:bg-black/60"
-        }`}
+        } ${align === "right" ? "flex-row-reverse" : ""}`}
       >
         <div className={`flex items-center gap-1.5 overflow-hidden ${align === "right" ? "flex-row-reverse text-right" : ""}`}>
           <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 px-1 rounded border border-amber-400/30">
@@ -239,9 +238,9 @@ export default function BracketPage() {
         </div>
 
         {/* 4 Columns for R1, R2, S16, E8 */}
-        <div className={`grid grid-cols-4 gap-2 flex-1 items-stretch ${isLeft ? "" : "direction-rtl"}`}>
+        <div className={`flex w-full gap-2 flex-1 items-stretch ${isLeft ? "flex-row" : "flex-row-reverse"}`}>
           {/* ROUND 1 */}
-          <div className="flex flex-col justify-between space-y-2">
+          <div className="w-1/4 flex flex-col">
             {ROUND1_PAIRS.map(([seedA, seedB], idx) => {
               const m = r1[idx];
               const teamA = m ? m.team1 : regionTeams.find((t) => t.Seed === seedA);
@@ -250,68 +249,76 @@ export default function BracketPage() {
               const isWinnerB = m?.winner?.TeamID === teamB?.TeamID;
 
               return (
-                <div key={`r1-${region}-${idx}`} className="flex flex-col justify-center space-y-1 relative my-auto">
-                  {renderTeamBox(teamA, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
-                  {renderTeamBox(teamB, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
+                <div key={`r1-${region}-${idx}`} className="flex-1 flex flex-col justify-center px-1">
+                  <div className="flex flex-col space-y-1">
+                    {renderTeamBox(teamA, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
+                    {renderTeamBox(teamB, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
+                  </div>
                 </div>
               );
             })}
           </div>
 
           {/* ROUND 2 */}
-          <div className="flex flex-col justify-around py-4 space-y-4">
+          <div className="w-1/4 flex flex-col">
             {[0, 1, 2, 3].map((idx) => {
               const m = r2[idx];
               const isWinnerA = m?.winner?.TeamID === m?.team1?.TeamID;
               const isWinnerB = m?.winner?.TeamID === m?.team2?.TeamID;
 
               return (
-                <div key={`r2-${region}-${idx}`} className="flex flex-col justify-center space-y-1.5 relative my-auto">
-                  {renderTeamBox(m?.team1, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
-                  {renderTeamBox(m?.team2, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
+                <div key={`r2-${region}-${idx}`} className="flex-1 flex flex-col justify-center px-1">
+                  <div className="flex flex-col space-y-1">
+                    {renderTeamBox(m?.team1, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
+                    {renderTeamBox(m?.team2, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
+                  </div>
                 </div>
               );
             })}
           </div>
 
           {/* SWEET 16 */}
-          <div className="flex flex-col justify-around py-8 space-y-8">
+          <div className="w-1/4 flex flex-col">
             {[0, 1].map((idx) => {
               const m = s16[idx];
               const isWinnerA = m?.winner?.TeamID === m?.team1?.TeamID;
               const isWinnerB = m?.winner?.TeamID === m?.team2?.TeamID;
 
               return (
-                <div key={`s16-${region}-${idx}`} className="flex flex-col justify-center space-y-2 relative my-auto">
-                  {renderTeamBox(m?.team1, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
-                  {renderTeamBox(m?.team2, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
+                <div key={`s16-${region}-${idx}`} className="flex-1 flex flex-col justify-center px-1">
+                  <div className="flex flex-col space-y-1">
+                    {renderTeamBox(m?.team1, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
+                    {renderTeamBox(m?.team2, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
+                  </div>
                 </div>
               );
             })}
           </div>
 
           {/* ELITE 8 */}
-          <div className="flex flex-col justify-center py-12 my-auto">
+          <div className="w-1/4 flex flex-col">
             {(() => {
               const m = e8[0];
               const isWinnerA = m?.winner?.TeamID === m?.team1?.TeamID;
               const isWinnerB = m?.winner?.TeamID === m?.team2?.TeamID;
 
               return (
-                <div className="flex flex-col justify-center space-y-2 relative">
-                  <div className="text-[10px] text-center font-mono text-amber-300/80 mb-1 uppercase font-bold">
-                    E8 FINALIST
-                  </div>
-                  {renderTeamBox(m?.team1, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
-                  {renderTeamBox(m?.team2, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
-                  {m?.winner && (
-                    <div className="mt-2 text-center bg-amber-500/20 border border-amber-400/40 rounded p-1">
-                      <span className="text-[10px] font-mono text-amber-300 uppercase block">REGIONAL CHAMP</span>
-                      <span className="text-xs font-bold text-white truncate block">
-                        #{m.winner.Seed} {m.winner.TeamName}
-                      </span>
+                <div className="flex-1 flex flex-col justify-center px-1">
+                  <div className="flex flex-col space-y-1 relative">
+                    <div className="text-[10px] text-center font-mono text-amber-300/80 mb-1 uppercase font-bold">
+                      E8 FINALIST
                     </div>
-                  )}
+                    {renderTeamBox(m?.team1, isWinnerA, m?.prob1, isLeft ? "left" : "right")}
+                    {renderTeamBox(m?.team2, isWinnerB, m?.prob2, isLeft ? "left" : "right")}
+                    {m?.winner && (
+                      <div className="mt-2 text-center bg-amber-500/20 border border-amber-400/40 rounded p-1">
+                        <span className="text-[10px] font-mono text-amber-300 uppercase block">REGIONAL CHAMP</span>
+                        <span className="text-xs font-bold text-white truncate block">
+                          #{m.winner.Seed} {m.winner.TeamName}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })()}
@@ -322,89 +329,31 @@ export default function BracketPage() {
   };
 
   return (
-    <main className="max-w-[1600px] mx-auto p-2 sm:p-4 text-white">
+    <main className="max-w-[1600px] mx-auto p-6 md:p-12 text-white">
 
-      {/* TOP CHAMPIONSHIP TITLE BANNER (OFFICIAL NCAA STYLE) */}
-      <div className="ncaa-header-gradient rounded-xl p-4 sm:p-6 mb-6 shadow-2xl relative overflow-hidden">
-        <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
-          <Trophy size={260} className="text-amber-400" />
-        </div>
+      {/* Header Title Banner */}
+      <div className="chalk-border px-8 py-4 md:py-6 text-center max-w-[928px] w-full mx-auto mb-10 bg-black/40 relative flex flex-col items-center justify-center min-h-[140px] md:min-h-[160px]">
+        <h1 className="text-4xl md:text-6xl font-bold chalk-text uppercase tracking-wider flex items-center justify-center flex-wrap gap-3">
+          <Trophy className="text-yellow-300" size={40} />
+          <span>TOURNAMENT SIMULATOR</span>
+        </h1>
 
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 relative z-10">
-          <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/30 border border-red-500/50 text-red-300 text-xs font-mono uppercase tracking-widest mb-1">
-              <Shield size={14} className="text-red-400" /> Official Tournament Bracket Layout
-            </div>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold font-mono tracking-tight text-white uppercase chalk-text flex items-center gap-3">
-              <span>2026 NCAA DIVISION I MEN&apos;S BASKETBALL CHAMPIONSHIP</span>
-            </h1>
-            <p className="text-sm text-slate-300 font-mono mt-1 flex items-center justify-center lg:justify-start gap-4">
-              <span>64 Teams &bull; 4 Regions &bull; Elo Predictor Engine</span>
-            </p>
-          </div>
-
-          {/* Action Simulation Controls */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleSimulate}
-              className="chalk-button px-6 py-3 text-lg font-bold inline-flex items-center gap-2.5 shadow-xl bg-amber-500/30 text-amber-300 border-amber-400/80 hover:bg-amber-500/40 rounded-xl"
-            >
-              {simulated ? <RefreshCw size={22} className="animate-spin-slow" /> : <Play size={22} />}
-              {simulated ? "RE-SIMULATE BRACKET" : "SIMULATE TOURNAMENT"}
-            </button>
-          </div>
-        </div>
-
-        {/* View Mode Switcher */}
-        <div className="flex items-center justify-between border-t border-white/10 mt-5 pt-3 flex-wrap gap-2">
-          <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg border border-white/10">
-            <span className="text-xs font-mono text-white/50 px-2 uppercase flex items-center gap-1">
-              <Eye size={12} /> View:
-            </span>
-            <button
-              onClick={() => setViewMode("full")}
-              className={`px-3 py-1 rounded text-xs font-bold font-mono transition-all ${
-                viewMode === "full" ? "bg-amber-500 text-black shadow" : "text-white/70 hover:text-white"
-              }`}
-            >
-              Full Poster Bracket
-            </button>
-            {(["South", "East", "Midwest", "West"] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setViewMode(r)}
-                className={`px-3 py-1 rounded text-xs font-bold font-mono transition-all ${
-                  viewMode === r ? "bg-emerald-600 text-white shadow" : "text-white/70 hover:text-white"
-                }`}
-              >
-                {r} Region
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-4 text-xs font-mono text-white/60">
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Higher Seed</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Predicted Winner</span>
-          </div>
-        </div>
+        <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-3">
+          Simulate the full 68-team March Madness tournament bracket round-by-round
+        </p>
       </div>
 
-      {/* TOP ROUND HEADERS BAR */}
-      <div className="hidden lg:grid grid-cols-11 gap-2 bg-black/40 border border-white/10 p-2 rounded-lg mb-4 text-center text-xs font-mono font-bold uppercase text-amber-300">
-        <div className="col-span-2 text-left pl-2">FIRST ROUND</div>
-        <div className="col-span-1">SECOND ROUND</div>
-        <div className="col-span-1">SWEET 16</div>
-        <div className="col-span-1">ELITE 8</div>
-        <div className="col-span-3 text-center text-amber-400 font-extrabold text-sm">FINAL FOUR & CHAMPIONSHIP</div>
-        <div className="col-span-1">ELITE 8</div>
-        <div className="col-span-1">SWEET 16</div>
-        <div className="col-span-1">SECOND ROUND</div>
-        <div className="col-span-1 text-right pr-2">FIRST ROUND</div>
+      <div className="flex flex-col items-center justify-center gap-6 mb-8">
+        <button
+          onClick={handleSimulate}
+          className="chalk-button px-8 py-3 text-lg font-bold inline-flex items-center gap-2.5 shadow-xl bg-amber-500/30 text-amber-300 border-amber-400/80 hover:bg-amber-500/40 rounded-xl cursor-pointer"
+        >
+          {simulated ? <RefreshCw size={22} className="animate-spin-slow" /> : <Play size={22} />}
+          {simulated ? "RE-SIMULATE BRACKET" : "SIMULATE TOURNAMENT"}
+        </button>
       </div>
 
-      {/* FULL POSTER BRACKET VIEW (2 LEFT REGIONS, CENTERPIECE, 2 RIGHT REGIONS) */}
-      {viewMode === "full" ? (
-        <div className="overflow-x-auto pb-6">
+      <div className="overflow-x-auto pb-6">
           <div className="bracket-container flex flex-col gap-6">
 
             {/* MAIN TOURNAMENT BOARD GRID */}
@@ -420,7 +369,7 @@ export default function BracketPage() {
               </div>
 
               {/* CENTERPIECE COLUMN (FINAL FOUR & CHAMPIONSHIP) */}
-              <div className="lg:col-span-3 flex flex-col justify-between items-center bg-slate-950/70 border-2 border-amber-400/40 rounded-2xl p-4 shadow-2xl relative">
+              <div className="lg:col-span-3 flex flex-col justify-center gap-6 items-center bg-slate-950/70 border-2 border-amber-400/40 rounded-2xl p-6 shadow-2xl relative">
                 
                 {/* FINAL FOUR LOGO BADGE */}
                 <div className="text-center border-b border-amber-400/30 pb-4 w-full">
@@ -514,19 +463,6 @@ export default function BracketPage() {
                     )}
                   </div>
                 </div>
-
-                {/* NETWORK & SPONSOR LOGOS FOOTER */}
-                <div className="w-full border-t border-slate-800 pt-3 flex items-center justify-around text-white/40 text-[10px] font-mono">
-                  <div className="flex items-center gap-1 font-extrabold text-white/60">
-                    <Tv size={12} className="text-amber-400" /> CBS SPORTS
-                  </div>
-                  <span>&bull;</span>
-                  <div className="font-bold text-white/60">TBS</div>
-                  <span>&bull;</span>
-                  <div className="font-bold text-white/60">TNT</div>
-                  <span>&bull;</span>
-                  <div className="font-bold text-white/60">truTV</div>
-                </div>
               </div>
 
               {/* RIGHT HALF (MIDWEST & WEST REGIONS) */}
@@ -542,23 +478,6 @@ export default function BracketPage() {
 
           </div>
         </div>
-      ) : (
-        /* SINGLE REGION ZOOMED VIEW */
-        <div className="bg-black/30 p-4 rounded-xl border border-white/20">
-          <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-2">
-            <h2 className="text-2xl font-bold font-mono text-amber-300">
-              {viewMode} Region Detailed View
-            </h2>
-            <button
-              onClick={() => setViewMode("full")}
-              className="text-xs font-mono text-emerald-400 hover:underline flex items-center gap-1"
-            >
-              Back to Full Poster Bracket <ChevronRight size={14} />
-            </button>
-          </div>
-          {renderRegionTree(viewMode as "East" | "West" | "South" | "Midwest", viewMode === "South" || viewMode === "East" ? "left" : "right")}
-        </div>
-      )}
 
     </main>
   );

@@ -3,16 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Swords, Trophy, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
+import { LayoutDashboard, Swords, Trophy, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: "/", label: "Match Predictor", icon: Swords },
-    { href: "/bracket", label: "Bracket Simulator", icon: Trophy },
-    { href: "/insights", label: "Model Insights", icon: LineChart },
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/predictor", label: "Predictor", icon: Swords },
+    { href: "/bracket", label: "Bracket", icon: Trophy },
+    { href: "/insights", label: "Insights", icon: LineChart },
     { href: "/report", label: "Report", icon: FileText },
   ];
 
