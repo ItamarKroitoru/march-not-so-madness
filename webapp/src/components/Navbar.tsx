@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Swords, Trophy, Users, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
+import { Swords, Trophy, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -11,7 +11,6 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Match Predictor", icon: Swords },
-    { href: "/teams", label: "Teams Explorer", icon: Users },
     { href: "/bracket", label: "Bracket Simulator", icon: Trophy },
     { href: "/insights", label: "Model Insights", icon: LineChart },
     { href: "/report", label: "Report", icon: FileText },
