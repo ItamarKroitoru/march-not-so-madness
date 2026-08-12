@@ -58,33 +58,33 @@ export default function Dashboard() {
       </div>
 
       {/* Grid of Parts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mb-12">
         {parts.map((item) => {
           const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className="chalk-border p-8 md:p-10 bg-black/40 hover:bg-white/[0.03] transition-all duration-200 group flex flex-col justify-between shadow-2xl"
+              className="chalk-border p-5 md:p-6 bg-black/40 hover:bg-white/[0.03] transition-all duration-200 group flex flex-col justify-between shadow-2xl"
             >
               <div>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-2xl bg-black/60 border border-white/20 flex items-center justify-center text-amber-300 shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                    <Icon size={28} />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-black/60 border border-white/20 flex items-center justify-center text-amber-300 shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                    <Icon size={20} />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold chalk-text text-white group-hover:text-amber-300 transition-colors">
+                  <h2 className="text-lg md:text-xl font-bold chalk-text text-white group-hover:text-amber-300 transition-colors">
                     {item.title}
                   </h2>
                 </div>
 
-                <p className="text-base md:text-lg text-white/85 leading-relaxed font-light mb-8">
+                <p className="text-xs md:text-sm text-white/85 leading-relaxed font-light mb-4">
                   {item.description}
                 </p>
               </div>
 
-              <div className={`flex items-center gap-2.5 text-base md:text-lg font-mono font-bold transition-colors pt-4 border-t border-white/15 ${item.accentColor}`}>
+              <div className={`flex items-center gap-2 text-xs md:text-sm font-mono font-bold transition-colors pt-3 border-t border-white/15 ${item.accentColor}`}>
                 <span>{item.actionText}</span>
-                <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
               </div>
             </Link>
           );
@@ -93,7 +93,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="w-full text-center text-xs md:text-sm font-mono text-white/40 border-t border-white/10 pt-6">
-        NCAA March Not-So-Madness &bull; Multi-Season ML Basketball Predictor (2003–2026)
+        Final Project for Needle in a Haystack Course &bull; HUJI
       </footer>
 
     </main>

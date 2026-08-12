@@ -30,7 +30,7 @@ export function Navbar() {
             <span className="font-bold text-base md:text-lg lg:text-xl chalk-text tracking-wide text-white whitespace-nowrap flex items-center gap-1.5">
               NCAA MARCH <span className="italic font-light opacity-80 text-yellow-200">not-so</span> MADNESS
             </span>
-            <span className="text-[10px] md:text-xs text-white/60 font-mono tracking-wider">Needle in a Haystack - HUJI</span>
+            <span className="text-[10px] md:text-xs text-white/60 font-mono tracking-wider">Needle in a Haystack &bull; HUJI</span>
           </div>
         </Link>
 
