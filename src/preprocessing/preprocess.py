@@ -190,7 +190,7 @@ def preprocess_X(
     # 1. Copy raw dataframe
     X = raw_X.copy()
 
-    # 3. Drop non-predictive metadata
+    # 2. Drop non-predictive metadata
     columns_to_drop = [
         column for column in METADATA_COLUMNS if column in X.columns
     ]
