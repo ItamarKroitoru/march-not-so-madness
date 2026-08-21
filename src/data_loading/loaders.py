@@ -53,7 +53,7 @@ def get_regular_seasons() -> list[int]:
     """
     Return all seasons available in the regular-season results file.
     """
-    file_path = DATA_DIR / "MRegularSeasonCompactResults.csv"
+    file_path = DATA_DIR / "MRegularSeasonDetailedResults.csv"
 
     seasons = pd.read_csv(
         file_path,

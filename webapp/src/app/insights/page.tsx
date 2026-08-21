@@ -1,9 +1,30 @@
 "use client";
 
-import { LineChart, Cpu, Sparkles, Database, Calculator, CheckCircle2, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { LineChart, Cpu, Sparkles, Database, Calculator, CheckCircle2, TrendingUp, TrendingDown, ArrowRight, BarChart3 } from "lucide-react";
 import { MODEL_WEIGHTS, FEATURE_LABELS } from "@/lib/predictor";
+import { DailyPerformance, MatchAnalysisSummary } from "@/lib/types";
 
 export default function InsightsPage() {
+  const [dailyPerformance, setDailyPerformance] = useState<DailyPerformance[]>([]);
+  const [summary, setSummary] = useState<MatchAnalysisSummary | null>(null);
+  const [hoveredDay, setHoveredDay] = useState<DailyPerformance | null>(null);
+
+  useEffect(() => {
+    fetch("/api/matches?summaryOnly=1")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.dailyPerformance) setDailyPerformance(data.dailyPerformance);
+        if (data.summary) setSummary(data.summary);
+      })
+      .catch((err) => console.error("Failed to load insights daily performance:", err));
+  }, []);
+
+  const maxDailyGames = useMemo(() => {
+    if (dailyPerformance.length === 0) return 100;
+    return Math.max(...dailyPerformance.map((d) => d.total));
+  }, [dailyPerformance]);
+
   // Sort features by weight
   const sortedFeatures = Object.entries(MODEL_WEIGHTS)
     .map(([key, weight]) => ({
@@ -63,7 +84,7 @@ export default function InsightsPage() {
       </div>
 
       {/* MATCHUP PIPELINE */}
-      <div className="chalk-border p-8 md:p-10 bg-black/40 mb-10 rounded-3xl">
+      <div className="chalk-border p-8 md:p-10 bg-black/40 mb-10 rounded-3xl w-full">
         <div className="flex items-center gap-3 mb-6">
           <Cpu className="text-emerald-400" size={28} />
           <h2 className="text-2xl md:text-3xl font-bold chalk-text text-white">
@@ -98,7 +119,7 @@ export default function InsightsPage() {
       </div>
 
       {/* TOP FEATURE WEIGHTS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 w-full">
         
         {/* POSITIVE FACTORS */}
         <div className="chalk-border p-8 bg-emerald-950/30 border-emerald-500/40 rounded-3xl">
@@ -151,7 +172,7 @@ export default function InsightsPage() {
       </div>
 
       {/* QUICK SUMMARY SNAPSHOT */}
-      <div className="chalk-border p-6 bg-black/40 grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-mono rounded-3xl">
+      <div className="chalk-border p-6 bg-black/40 grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-mono rounded-3xl w-full mb-10">
         <div>
           <span className="text-xs text-white/50 block uppercase tracking-wider">Algorithm</span>
           <span className="text-xl font-bold text-emerald-300 mt-1 block">Logistic Regression</span>
@@ -166,6 +187,89 @@ export default function InsightsPage() {
         </div>
       </div>
 
+      {/* DAILY PREDICTION PERFORMANCE PLOT (LR Results Analysis Cell 9) */}
+      <div className="chalk-border p-6 md:p-8 bg-black/40 rounded-3xl w-full shadow-2xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <BarChart3 className="text-amber-400" size={24} />
+              <h2 className="text-xl md:text-2xl font-bold chalk-text text-white">
+                Daily Prediction Performance Throughout the 2026 Season
+              </h2>
+            </div>
+            <p className="text-xs md:text-sm font-mono text-emerald-300 font-bold mt-1">
+              Overall Test Accuracy: {summary ? `${summary.overallAccuracy}% (${summary.correctCount.toLocaleString()}/${summary.totalGames.toLocaleString()} games)` : "71.1%"}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-4 text-xs font-mono self-start sm:self-auto">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3.5 h-3.5 rounded-sm bg-emerald-500 inline-block" />
+              <span className="text-white/90">Correct Prediction</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-3.5 h-3.5 rounded-sm bg-rose-500 inline-block" />
+              <span className="text-white/90">Incorrect / Upset</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Chart Box */}
+        <div className="w-full bg-black/60 p-4 rounded-2xl border border-white/10 relative">
+          
+          {/* Active Hover Tooltip Display */}
+          <div className="min-h-[30px] mb-3 flex items-center justify-between text-xs font-mono">
+            {hoveredDay ? (
+              <span className="text-amber-300 font-bold bg-white/10 px-3 py-1 rounded-lg border border-white/15">
+                Day {hoveredDay.dayNum}: {hoveredDay.correct} Correct, {hoveredDay.incorrect} Incorrect &bull; {hoveredDay.total} Total Games ({hoveredDay.accuracy}% Accuracy)
+              </span>
+            ) : (
+              <span className="text-white/50 italic">Hover over any day bar below to inspect that day&apos;s results</span>
+            )}
+          </div>
+
+          {/* Stacked Bar Visualizer */}
+          <div className="h-48 md:h-56 w-full flex items-end gap-[2px] md:gap-[3px] overflow-x-auto pb-2 pt-4">
+            {dailyPerformance.map((day) => {
+              const correctHeight = (day.correct / maxDailyGames) * 100;
+              const incorrectHeight = (day.incorrect / maxDailyGames) * 100;
+
+              return (
+                <div
+                  key={day.dayNum}
+                  onMouseEnter={() => setHoveredDay(day)}
+                  onMouseLeave={() => setHoveredDay(null)}
+                  className="flex-1 min-w-[5px] md:min-w-[7px] max-w-[14px] flex flex-col justify-end h-full group cursor-pointer transition-all duration-150 hover:opacity-80"
+                >
+                  {/* Incorrect / Upset (Top Red Portion) */}
+                  <div
+                    style={{ height: `${incorrectHeight}%` }}
+                    className="w-full bg-rose-500/90 rounded-t-sm"
+                  />
+                  {/* Correct (Bottom Green Portion) */}
+                  <div
+                    style={{ height: `${correctHeight}%` }}
+                    className="w-full bg-emerald-500/90"
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* X Axis Range Labels */}
+          <div className="flex justify-between items-center text-[11px] font-mono text-white/50 border-t border-white/10 pt-2 px-1 mt-1">
+            <span>Day 2 (Season Start)</span>
+            <span>Day 65 (Mid-Season)</span>
+            <span>Day 132 (Conference Tournaments)</span>
+          </div>
+        </div>
+
+        <p className="text-xs text-white/60 font-mono text-center mt-4">
+          Each stacked bar represents all games played on a given day. Bar height indicates the total number of games.
+        </p>
+      </div>
+
     </main>
   );
 }
+

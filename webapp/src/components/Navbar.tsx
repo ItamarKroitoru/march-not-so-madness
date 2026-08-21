@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Swords, Trophy, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
+import { LayoutDashboard, Swords, Trophy, LineChart, FileText, Menu, X, Sparkles, CheckCircle2 } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -12,6 +12,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/predictor", label: "Predictor", icon: Swords },
+    { href: "/matches", label: "Match Analysis", icon: CheckCircle2 },
     { href: "/bracket", label: "Bracket", icon: Trophy },
     { href: "/insights", label: "Insights", icon: LineChart },
     { href: "/report", label: "Report", icon: FileText },

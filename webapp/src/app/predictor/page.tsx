@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trophy, Swords, Calculator, Calendar, MapPin, TrendingUp } from "lucide-react";
-import { TeamState, PredictionResult } from "../../lib/types";
+import { Trophy, Swords, Calculator, Calendar, MapPin, TrendingUp, CheckCircle2, XCircle, Sparkles, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { TeamState, PredictionResult, MatchRecord } from "../../lib/types";
 
 export default function MatchupPredictorPage() {
   const [seasons, setSeasons] = useState<number[]>([]);
@@ -21,6 +22,7 @@ export default function MatchupPredictorPage() {
   const [location, setLocation] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
+  const [historicalMatch, setHistoricalMatch] = useState<MatchRecord | null>(null);
 
   // Load Seasons on Mount
   useEffect(() => {
@@ -63,6 +65,24 @@ export default function MatchupPredictorPage() {
       })
       .catch((err) => console.error("Failed to load season 2 teams:", err));
   }, [season2]);
+
+  // Check for Ground-Truth Real Historical Match in Dataset (LR Results Analysis)
+  useEffect(() => {
+    if (season1 === season2 && team1Name && team2Name && team1Name !== team2Name) {
+      fetch(`/api/matches?lookup=1&team1=${encodeURIComponent(team1Name)}&team2=${encodeURIComponent(team2Name)}&season=${season1}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.found && data.match) {
+            setHistoricalMatch(data.match);
+          } else {
+            setHistoricalMatch(null);
+          }
+        })
+        .catch(() => setHistoricalMatch(null));
+    } else {
+      setHistoricalMatch(null);
+    }
+  }, [season1, season2, team1Name, team2Name]);
 
   const handlePredict = async () => {
     if (!team1Name || !team2Name) {
@@ -302,6 +322,42 @@ export default function MatchupPredictorPage() {
 
         </div>
 
+        {/* Ground-Truth Historical Match Alert if available */}
+        {historicalMatch && (
+          <div className="w-full bg-emerald-950/40 border border-emerald-400/40 p-4 rounded-2xl mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300">
+                <Sparkles size={22} />
+              </div>
+              <div>
+                <span className="text-xs uppercase font-mono font-bold text-amber-300 block">
+                  Ground-Truth Matchup Found ({historicalMatch.season} Season &bull; Day {historicalMatch.dayNum})
+                </span>
+                <span className="text-sm text-white font-mono">
+                  Actual Winner: <strong className="text-emerald-300">{historicalMatch.actualWinner}</strong> &bull; Model Predicted: <strong className="text-yellow-300">{historicalMatch.predictedWinner}</strong>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setLocation(historicalMatch.location)}
+                className="px-3 py-1.5 text-xs font-mono font-bold bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors cursor-pointer"
+                title="Apply court location from the real game"
+              >
+                Use Real Location ({historicalMatch.location === 1 ? "Team 1 Home" : historicalMatch.location === -1 ? "Team 2 Home" : "Neutral"})
+              </button>
+              <Link
+                href={`/matches?team=${encodeURIComponent(historicalMatch.team1Name)}&day=${historicalMatch.dayNum}`}
+                className="px-3 py-1.5 text-xs font-mono font-bold bg-amber-400/20 text-amber-300 hover:bg-amber-400/30 border border-amber-400/30 rounded-lg transition-colors flex items-center gap-1"
+              >
+                <span>View in Match Analysis</span>
+                <ExternalLink size={12} />
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Predict Action Button */}
         <button
           onClick={handlePredict}
@@ -316,6 +372,45 @@ export default function MatchupPredictorPage() {
         {prediction && (
           <div className="chalk-border p-6 md:p-8 w-full bg-black/40 animate-fade-in relative shadow-2xl rounded-3xl">
             
+            {/* Ground-Truth Evaluation Comparison (From LR Results Analysis) */}
+            {historicalMatch && (
+              <div
+                className={`p-4 rounded-2xl mb-6 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md ${
+                  historicalMatch.correct
+                    ? "bg-emerald-950/60 border-emerald-500/50 text-emerald-300"
+                    : "bg-rose-950/60 border-rose-500/50 text-rose-300"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {historicalMatch.correct ? (
+                    <CheckCircle2 size={32} className="text-emerald-400 shrink-0" />
+                  ) : (
+                    <XCircle size={32} className="text-rose-400 shrink-0" />
+                  )}
+                  <div>
+                    <span className="text-xs uppercase font-mono font-bold block text-white/80">
+                      Ground-Truth Evaluation (LR Results Analysis)
+                    </span>
+                    <span className="text-base font-bold text-white font-mono">
+                      Actual Game Winner: <span className="text-amber-300">{historicalMatch.actualWinner}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <span
+                    className={`px-3 py-1 rounded-lg font-extrabold flex items-center gap-1 ${
+                      historicalMatch.correct
+                        ? "bg-emerald-500/30 text-emerald-200 border border-emerald-400"
+                        : "bg-rose-500/30 text-rose-200 border border-rose-400"
+                    }`}
+                  >
+                    {historicalMatch.correct ? "✓ CORRECT PREDICTION" : "✗ UPSET / INCORRECT"}
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* WINNER HEADER */}
             <div className="text-center border-b border-white/15 pb-6 mb-6">
               <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold block mb-1">

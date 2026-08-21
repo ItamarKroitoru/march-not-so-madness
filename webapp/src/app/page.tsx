@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Swords, Trophy, LineChart, FileText, ArrowRight } from "lucide-react";
+import { Swords, Trophy, LineChart, FileText, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function Dashboard() {
   const parts = [
@@ -12,6 +12,14 @@ export default function Dashboard() {
       description: "Simulate a head-to-head game outcome between any two NCAA Division I teams (2003–2026).",
       actionText: "Launch Match Predictor",
       accentColor: "text-emerald-400 group-hover:text-amber-300",
+    },
+    {
+      title: "Match Results & Analysis",
+      href: "/matches",
+      icon: CheckCircle2,
+      description: "Inspect specific matches: compare predicted winning team vs. actual winning team, daily timeline, & upsets.",
+      actionText: "Explore Match Analysis",
+      accentColor: "text-cyan-400 group-hover:text-amber-300",
     },
     {
       title: "Bracket Simulator",
