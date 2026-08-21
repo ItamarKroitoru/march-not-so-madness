@@ -9,9 +9,10 @@ import {
   Flame,
   ChevronLeft,
   ChevronRight,
-  Play,
   Zap,
   Activity,
+  Sparkles,
+  Gamepad2,
 } from "lucide-react";
 import { MatchRecord, DailyPerformance } from "@/lib/types";
 
@@ -136,45 +137,50 @@ export default function MatchesAnalysisPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-8 lg:p-12 max-w-6xl mx-auto relative overflow-hidden">
-      
+
       {/* Header Banner */}
-      <div className="chalk-border px-6 md:px-8 py-5 text-center max-w-4xl w-full mx-auto mb-8 bg-black/40 relative flex flex-col items-center justify-center min-h-[130px] shadow-2xl">
-        <h1 className="text-3xl md:text-5xl font-bold chalk-text uppercase tracking-wider flex items-center justify-center flex-wrap gap-3">
-          <Swords className="text-yellow-300" size={36} />
-          <span>MATCH SIMULATOR &amp; ANALYSIS</span>
+      <div className="chalk-border px-8 py-4 md:py-6 text-center max-w-[928px] w-full mx-auto mb-10 bg-black/40 relative flex flex-col items-center justify-center min-h-[140px] md:min-h-[160px] shadow-2xl">
+        <h1 className="text-4xl md:text-6xl font-bold chalk-text uppercase tracking-wider flex items-center justify-center flex-wrap gap-3">
+          <Gamepad2 className="text-yellow-300" size={40} />
+          <span>MATCH SIMULATOR</span>
         </h1>
-        <div className="mt-5 flex flex-col items-center gap-2 font-mono">
-          <span className="text-amber-300 font-bold chalk-text text-lg md:text-2xl tracking-wide uppercase">
-            Live Next-Season Workflow Demo:
+        <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-3">
+          2026 Season Ground-Truth Replay &amp; Model Simulator
+        </p>
+      </div>
+
+      {/* SEPARATE WORKFLOW DEMO CARD */}
+      <div className="chalk-border p-6 md:p-8 max-w-xl w-full mx-auto mb-8 bg-black/40 text-center rounded-3xl shadow-xl font-mono">
+        <span className="text-amber-300 font-bold chalk-text text-base md:text-xl tracking-wide uppercase block mb-4">
+          Live Next-Season Workflow Demo:
+        </span>
+        <div className="flex flex-col items-center gap-1.5 text-sm md:text-base font-bold text-amber-100/90 max-w-sm mx-auto">
+          <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
+            1. Select Date
           </span>
-          <div className="flex flex-col items-center gap-1.5 text-sm md:text-lg font-bold text-amber-100/90 mt-1">
-            <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow">
-              1. Select Date
-            </span>
-            <span className="text-yellow-400 font-black text-base">↓</span>
-            <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow">
-              2. Pick Matchup
-            </span>
-            <span className="text-yellow-400 font-black text-base">↓</span>
-            <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow">
-              3. Pre-Game ML Prediction
-            </span>
-            <span className="text-yellow-400 font-black text-base">↓</span>
-            <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow">
-              4. Play Game
-            </span>
-            <span className="text-yellow-400 font-black text-base">↓</span>
-            <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow text-emerald-300">
-              5. Ground-Truth Reveal
-            </span>
-          </div>
+          <span className="text-yellow-400 font-black text-sm">↓</span>
+          <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
+            2. Pick Matchup
+          </span>
+          <span className="text-yellow-400 font-black text-sm">↓</span>
+          <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
+            3. Pre-Game ML Prediction
+          </span>
+          <span className="text-yellow-400 font-black text-sm">↓</span>
+          <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
+            4. Play Game
+          </span>
+          <span className="text-yellow-400 font-black text-sm">↓</span>
+          <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center text-emerald-300">
+            5. Ground-Truth Reveal
+          </span>
         </div>
       </div>
 
       {/* STEP 1: DATE / DAY SELECTOR BAR */}
       <div className="chalk-border p-5 w-full bg-black/50 mb-8 rounded-3xl shadow-xl">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          
+
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
               <Calendar size={20} />
@@ -246,11 +252,10 @@ export default function MatchesAnalysisPage() {
             <button
               key={preset.day}
               onClick={() => handleDayChange(preset.day)}
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                selectedDay === preset.day
+              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${selectedDay === preset.day
                   ? "bg-amber-400 text-black font-bold"
                   : "bg-white/5 text-white/70 hover:bg-white/15"
-              }`}
+                }`}
             >
               {preset.label} (Day {preset.day})
             </button>
@@ -287,11 +292,10 @@ export default function MatchesAnalysisPage() {
                 <button
                   key={m.id}
                   onClick={() => handleSelectMatch(m)}
-                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${isSelected
                       ? "bg-amber-400/20 border-yellow-300 ring-2 ring-yellow-400 shadow-lg"
                       : "bg-black/40 border-white/10 hover:border-white/30 hover:bg-white/5"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between text-xs font-mono mb-2">
                     <span className="text-white/60 text-[11px]">{m.locationLabel}</span>
@@ -322,7 +326,7 @@ export default function MatchesAnalysisPage() {
       {/* STEP 3 & 4 & 5: PRE-GAME PREDICTION, SIMULATION & REVEAL SECTION */}
       {selectedMatch && (
         <div className="chalk-border p-6 md:p-8 w-full bg-black/60 rounded-3xl shadow-2xl relative mb-12">
-          
+
           {/* Section Header */}
           <div className="flex items-center justify-between border-b border-white/15 pb-4 mb-6">
             <div>
@@ -366,7 +370,7 @@ export default function MatchesAnalysisPage() {
             {/* Model Estimated Win Probability Bar */}
             <div className="mb-6">
               <div className="flex justify-between items-center text-sm font-mono font-bold mb-2">
-                <span className="text-emerald-400">
+                <span className="text-amber-400">
                   {selectedMatch.team1Name}: {(selectedMatch.probTeam1 * 100).toFixed(1)}%
                 </span>
                 <span className="text-blue-400">
@@ -377,7 +381,7 @@ export default function MatchesAnalysisPage() {
               <div className="w-full bg-black/60 h-8 rounded-full overflow-hidden flex border-2 border-white/20 font-mono shadow-inner">
                 <div
                   style={{ width: `${(selectedMatch.probTeam1 * 100).toFixed(1)}%` }}
-                  className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-sm text-white flex items-center justify-center font-extrabold transition-all duration-700"
+                  className="bg-gradient-to-r from-amber-500 to-orange-400 text-sm text-black flex items-center justify-center font-extrabold transition-all duration-700"
                 >
                   {(selectedMatch.probTeam1 * 100).toFixed(1)}%
                 </div>
@@ -396,7 +400,7 @@ export default function MatchesAnalysisPage() {
                 <thead className="bg-white/10 text-white/70 uppercase border-b border-white/10">
                   <tr>
                     <th className="p-3">Pre-Game Stat (Up to Day {selectedMatch.dayNum})</th>
-                    <th className="p-3 text-center text-emerald-400">{selectedMatch.team1Name}</th>
+                    <th className="p-3 text-center text-amber-400">{selectedMatch.team1Name}</th>
                     <th className="p-3 text-center text-blue-400">{selectedMatch.team2Name}</th>
                   </tr>
                 </thead>
@@ -423,7 +427,7 @@ export default function MatchesAnalysisPage() {
                   </tr>
                   <tr>
                     <td className="p-3 text-white/80 font-bold">Current Streak</td>
-                    <td className="p-3 text-center text-emerald-300 font-bold">{t1Stats?.streak || "—"}</td>
+                    <td className="p-3 text-center text-amber-300 font-bold">{t1Stats?.streak || "—"}</td>
                     <td className="p-3 text-center text-blue-300 font-bold">{t2Stats?.streak || "—"}</td>
                   </tr>
                 </tbody>
@@ -437,17 +441,27 @@ export default function MatchesAnalysisPage() {
             {!simulating && !matchRevealed && (
               <button
                 onClick={handleSimulateGame}
-                className="chalk-button px-10 py-4 text-xl md:text-2xl font-black flex items-center gap-3 shadow-2xl hover:scale-105 transition-all cursor-pointer rounded-2xl bg-amber-400 text-black border border-amber-300"
+                className="relative group p-[2px] rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:shadow-[0_0_50px_rgba(236,72,153,0.7)] transition-all duration-300 hover:scale-105 cursor-pointer"
               >
-                <Play size={28} className="fill-black" />
-                <span>STEP 4: PLAY &amp; SIMULATE MATCH</span>
+                {/* Animated Magic AI Gradient Ring */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-2xl animate-pulse group-hover:opacity-100 opacity-90 transition-opacity" />
+
+                {/* Button Inner Content */}
+                <div className="relative px-8 md:px-12 py-4 bg-zinc-950/90 rounded-[14px] flex items-center gap-4 backdrop-blur-md">
+                  <div className="p-2.5 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 text-white shadow-lg group-hover:rotate-12 transition-transform">
+                    <Sparkles size={26} className="text-yellow-200 fill-yellow-200" />
+                  </div>
+                  <span className="text-xl md:text-2xl font-black chalk-text text-white tracking-wide">
+                    STEP 4: SIMULATE MATCH
+                  </span>
+                </div>
               </button>
             )}
 
             {/* LIVE MATCH IN PROGRESS ANIMATION */}
             {simulating && (
               <div className="w-full bg-gradient-to-r from-zinc-950 via-black to-zinc-950 border-2 border-yellow-400/80 p-8 rounded-3xl shadow-2xl animate-fade-in text-center flex flex-col items-center">
-                
+
                 <div className="flex items-center gap-3 text-yellow-300 font-mono text-sm md:text-base font-extrabold uppercase tracking-widest mb-4">
                   <Activity size={24} className="animate-spin text-yellow-400" />
                   <span>GAME IN PROGRESS &bull; LIVE COURT SIMULATION</span>
@@ -457,7 +471,7 @@ export default function MatchesAnalysisPage() {
                 {/* Scoreboard Ticker */}
                 <div className="flex items-center justify-center gap-8 md:gap-14 my-4 font-mono">
                   <div className="text-center">
-                    <span className="text-xs text-emerald-400 font-bold block">{selectedMatch.team1Name}</span>
+                    <span className="text-xs text-amber-400 font-bold block">{selectedMatch.team1Name}</span>
                     <span className="text-4xl md:text-6xl font-black text-white animate-pulse">
                       {Math.round((simProgress / 100) * (selectedMatch.score?.team1Score || 75))}
                     </span>
@@ -492,7 +506,7 @@ export default function MatchesAnalysisPage() {
           {/* STEP 5: REAL OUTCOME REVEAL & GROUND-TRUTH VERDICT */}
           {matchRevealed && (
             <div className="w-full animate-fade-in">
-              
+
               {/* REAL FINAL SCOREBOARD */}
               {selectedMatch.score && (
                 <div className="chalk-border p-6 bg-black/60 rounded-3xl mb-6 shadow-xl">
@@ -501,11 +515,10 @@ export default function MatchesAnalysisPage() {
                   </span>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto font-mono">
-                    <div className={`p-4 rounded-2xl border text-center ${
-                      selectedMatch.score.team1Score > selectedMatch.score.team2Score
-                        ? "bg-emerald-950/40 border-emerald-500/50 text-emerald-300"
+                    <div className={`p-4 rounded-2xl border text-center ${selectedMatch.score.team1Score > selectedMatch.score.team2Score
+                        ? "bg-amber-950/40 border-amber-500/50 text-amber-300"
                         : "bg-black/40 border-white/10 text-white/70"
-                    }`}>
+                      }`}>
                       <span className="text-sm font-bold block">{selectedMatch.team1Name}</span>
                       <span className="text-4xl md:text-5xl font-black text-white mt-1 block">
                         {selectedMatch.score.team1Score}
@@ -517,11 +530,10 @@ export default function MatchesAnalysisPage() {
                       )}
                     </div>
 
-                    <div className={`p-4 rounded-2xl border text-center ${
-                      selectedMatch.score.team2Score > selectedMatch.score.team1Score
-                        ? "bg-emerald-950/40 border-emerald-500/50 text-emerald-300"
+                    <div className={`p-4 rounded-2xl border text-center ${selectedMatch.score.team2Score > selectedMatch.score.team1Score
+                        ? "bg-blue-950/40 border-blue-500/50 text-blue-300"
                         : "bg-black/40 border-white/10 text-white/70"
-                    }`}>
+                      }`}>
                       <span className="text-sm font-bold block">{selectedMatch.team2Name}</span>
                       <span className="text-4xl md:text-5xl font-black text-white mt-1 block">
                         {selectedMatch.score.team2Score}
@@ -542,11 +554,10 @@ export default function MatchesAnalysisPage() {
 
               {/* Verdict Announcement Card (Step 5 Final Component) */}
               <div
-                className={`p-6 md:p-8 rounded-3xl border-2 shadow-2xl mb-8 flex flex-col md:flex-row items-center justify-between gap-6 ${
-                  selectedMatch.correct
+                className={`p-6 md:p-8 rounded-3xl border-2 shadow-2xl mb-8 flex flex-col md:flex-row items-center justify-between gap-6 ${selectedMatch.correct
                     ? "bg-emerald-950/70 border-emerald-400 text-emerald-300"
                     : "bg-rose-950/70 border-rose-400 text-rose-300"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-4 text-left">
                   <div className={`p-4 rounded-2xl ${selectedMatch.correct ? "bg-emerald-500/30 text-emerald-300" : "bg-rose-500/30 text-rose-300"}`}>
@@ -567,11 +578,10 @@ export default function MatchesAnalysisPage() {
 
                 <div className="flex flex-col items-center md:items-end gap-2 shrink-0">
                   <span
-                    className={`px-4 py-2 rounded-xl text-sm font-mono font-extrabold shadow-lg ${
-                      selectedMatch.correct
+                    className={`px-4 py-2 rounded-xl text-sm font-mono font-extrabold shadow-lg ${selectedMatch.correct
                         ? "bg-emerald-500 text-black border border-emerald-200"
                         : "bg-rose-500 text-white border border-rose-200"
-                    }`}
+                      }`}
                   >
                     {selectedMatch.correct ? "✓ CORRECT PREDICTION" : "✗ MODEL MISS"}
                   </span>

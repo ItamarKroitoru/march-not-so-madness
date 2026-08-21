@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { LineChart, Cpu, Sparkles, Database, Calculator, CheckCircle2, TrendingUp, TrendingDown, ArrowRight, BarChart3 } from "lucide-react";
+import { LineChart, Cpu, Sparkles, Database, Calculator, CheckCircle2, ArrowRight, BarChart3 } from "lucide-react";
 import { MODEL_WEIGHTS, FEATURE_LABELS } from "@/lib/predictor";
 import { DailyPerformance, MatchAnalysisSummary } from "@/lib/types";
 
@@ -33,14 +33,6 @@ export default function InsightsPage() {
       weight,
     }))
     .sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight));
-
-  const positiveFeatures = sortedFeatures
-    .filter((f) => f.weight > 0)
-    .slice(0, 5);
-
-  const negativeFeatures = sortedFeatures
-    .filter((f) => f.weight < 0)
-    .slice(0, 5);
 
   const flowSteps = [
     {
@@ -119,56 +111,36 @@ export default function InsightsPage() {
       </div>
 
       {/* TOP FEATURE WEIGHTS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 w-full">
-        
-        {/* POSITIVE FACTORS */}
-        <div className="chalk-border p-8 bg-emerald-950/30 border-emerald-500/40 rounded-3xl">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingUp size={26} className="text-emerald-400" />
-            <h3 className="text-2xl font-bold chalk-text text-emerald-300">
-              Key Advantage Features
-            </h3>
+      <div className="chalk-border p-8 md:p-10 bg-black/40 mb-10 rounded-3xl w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <Sparkles className="text-blue-400" size={28} />
+            <h2 className="text-2xl md:text-3xl font-bold chalk-text text-white">
+              Top 10 Impactful Features
+            </h2>
           </div>
-          <p className="text-xs font-mono text-white/60 mb-6">
-            Higher values boost win probability
+          <p className="text-xs md:text-sm font-mono text-white/60 max-w-md">
+            Features with the highest absolute WEIGHTS
           </p>
-
-          <div className="space-y-3">
-            {positiveFeatures.map((f) => (
-              <div key={f.key} className="bg-black/50 p-4 rounded-xl border border-emerald-500/20 flex justify-between items-center">
-                <span className="text-base font-semibold text-white">{f.label}</span>
-                <span className="font-mono font-bold text-sm bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-lg border border-emerald-400/30">
-                  +{f.weight.toFixed(3)}
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* NEGATIVE FACTORS */}
-        <div className="chalk-border p-8 bg-amber-950/30 border-amber-500/40 rounded-3xl">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingDown size={26} className="text-amber-400" />
-            <h3 className="text-2xl font-bold chalk-text text-amber-300">
-              Key Penalty Features
-            </h3>
-          </div>
-          <p className="text-xs font-mono text-white/60 mb-6">
-            Higher values reduce win probability
-          </p>
-
-          <div className="space-y-3">
-            {negativeFeatures.map((f) => (
-              <div key={f.key} className="bg-black/50 p-4 rounded-xl border border-amber-500/20 flex justify-between items-center">
-                <span className="text-base font-semibold text-white">{f.label}</span>
-                <span className="font-mono font-bold text-sm bg-amber-500/20 text-amber-300 px-3 py-1 rounded-lg border border-amber-400/30">
-                  {f.weight.toFixed(3)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          {sortedFeatures.slice(0, 10).map((f) => {
+            const isPositive = f.weight > 0;
+            return (
+              <div key={f.key} className="bg-black/50 p-4 rounded-xl border border-white/10 flex justify-between items-center group hover:bg-black/70 transition-colors">
+                <span className="text-base font-semibold text-white group-hover:text-white/90">{f.label}</span>
+                <span className={`font-mono font-bold text-sm px-3 py-1 rounded-lg border ${
+                  isPositive 
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/30" 
+                    : "bg-amber-500/20 text-amber-300 border-amber-400/30"
+                }`}>
+                  {isPositive ? "+" : ""}{f.weight.toFixed(3)}
                 </span>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-
       </div>
 
       {/* QUICK SUMMARY SNAPSHOT */}
@@ -205,11 +177,11 @@ export default function InsightsPage() {
           <div className="flex items-center gap-4 text-xs font-mono self-start sm:self-auto">
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded-sm bg-emerald-500 inline-block" />
-              <span className="text-white/90">Correct Prediction</span>
+              <span className="text-white/90">Correct</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3.5 h-3.5 rounded-sm bg-rose-500 inline-block" />
-              <span className="text-white/90">Incorrect / Upset</span>
+              <span className="text-white/90">Incorrect</span>
             </div>
           </div>
         </div>
