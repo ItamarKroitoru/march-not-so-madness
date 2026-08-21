@@ -230,7 +230,8 @@ def preprocess_train_test(
         invert_cols: list[str] | None = None,
         exclude_cols: list[str] | None = None,
         diff_suffix: str = "_diff",
-        drop_base_features: bool = True
+        drop_base_features: bool = True,
+        symmetrize_test: bool = True
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
     Apply symmetrization and deterministic preprocessing to the train and test splits.
@@ -260,10 +261,14 @@ def preprocess_train_test(
         raw_X_train, y_train, prefix1, prefix2, invert_cols, exclude_cols
     )
 
-    print("Processing Testing Set:")
-    sym_X_test, sym_y_test = symmetrize_dataset(
-        raw_X_test, y_test, prefix1, prefix2, invert_cols, exclude_cols
-    )
+    if symmetrize_test:
+        print("Processing Testing Set:")
+        X_test, y_test = symmetrize_dataset(
+            raw_X_test, y_test, prefix1, prefix2, invert_cols, exclude_cols
+        )
+    else:
+        X_test = raw_X_test.copy()
+        y_test = y_test.copy()
 
     # 3. Preprocess (Differential calculation & Metadata cleanup)
     print("Extracting Differentials for Training Set:")
@@ -273,7 +278,7 @@ def preprocess_train_test(
 
     print("Extracting Differentials for Testing Set:")
     X_test = preprocess_X(
-        sym_X_test, prefix1, prefix2, diff_suffix, drop_base_features, exclude_cols
+        X_test, prefix1, prefix2, diff_suffix, drop_base_features, exclude_cols
     )
 
     # 4. Validate final column alignment
@@ -283,4 +288,4 @@ def preprocess_train_test(
             f"Train columns: {len(X_train.columns)}, Test columns: {len(X_test.columns)}"
         )
 
-    return X_train, X_test, sym_y_train, sym_y_test
+    return X_train, X_test, sym_y_train, y_test
