@@ -382,19 +382,19 @@ export default function MatchupPredictorPage() {
 
             {/* WINNER HEADER */}
             <div className="text-center border-b border-white/15 pb-6 mb-6">
-              <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold block mb-1">
+              <span className={`text-xs font-mono uppercase tracking-widest font-bold block mb-1 ${prediction.winner.TeamID === prediction.team1.TeamID ? 'text-teal-400' : 'text-blue-400'}`}>
                 Predicted Winner: {prediction.winner.TeamName} ({prediction.winner.Season})
               </span>
 
-              <h2 className="text-3xl md:text-5xl font-black text-amber-300 chalk-text flex items-center justify-center gap-3 my-2">
-                <Trophy className="text-yellow-400 animate-bounce" size={40} />
+              <h2 className={`text-3xl md:text-5xl font-black chalk-text flex items-center justify-center gap-3 my-2 ${prediction.winner.TeamID === prediction.team1.TeamID ? 'text-teal-300' : 'text-blue-300'}`}>
+                <Trophy className={`${prediction.winner.TeamID === prediction.team1.TeamID ? 'text-teal-400' : 'text-blue-400'} animate-bounce`} size={40} />
                 <span>{prediction.winner.TeamName} ({prediction.winner.Season})</span>
-                <Trophy className="text-yellow-400 animate-bounce" size={40} />
+                <Trophy className={`${prediction.winner.TeamID === prediction.team1.TeamID ? 'text-teal-400' : 'text-blue-400'} animate-bounce`} size={40} />
               </h2>
 
               <p className="text-sm font-mono text-white/70">
                 {prediction.team1.TeamName} {prediction.team1.Season} vs {prediction.team2.TeamName} {prediction.team2.Season} &bull;{" "}
-                <span className="text-yellow-200">
+                <span className="text-white/90">
                   {prediction.location === 1 ? `${prediction.team1.TeamName} Home` : prediction.location === -1 ? `${prediction.team2.TeamName} Home` : "Neutral Site"}
                 </span>
               </p>
@@ -407,7 +407,7 @@ export default function MatchupPredictorPage() {
               </span>
 
               <div className="flex justify-between items-center text-sm font-mono font-bold mb-2">
-                <span className="text-amber-400">
+                <span className="text-teal-400">
                   {prediction.team1.TeamName} {prediction.team1.Season}: {(prediction.probTeam1 * 100).toFixed(1)}%
                 </span>
                 <span className="text-blue-400">
@@ -418,7 +418,7 @@ export default function MatchupPredictorPage() {
               <div className="w-full bg-black/60 h-8 rounded-full overflow-hidden flex border-2 border-white/20 font-mono shadow-inner">
                 <div
                   style={{ width: `${(prediction.probTeam1 * 100).toFixed(1)}%` }}
-                  className="bg-gradient-to-r from-amber-500 to-orange-400 text-sm text-black flex items-center justify-center font-extrabold transition-all duration-700"
+                  className="bg-gradient-to-r from-teal-500 to-teal-400 text-sm text-white flex items-center justify-center font-extrabold transition-all duration-700"
                 >
                   {(prediction.probTeam1 * 100).toFixed(1)}%
                 </div>
@@ -435,14 +435,14 @@ export default function MatchupPredictorPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <div className="bg-white/5 p-4 rounded-xl border border-white/10 flex flex-col">
                 <span className="text-xs uppercase font-mono tracking-wider text-white/60">Expected Point Spread</span>
-                <span className="font-extrabold text-xl text-yellow-300 mt-1">
-                  {prediction.winner.TeamName} <span className="font-mono text-amber-300">-{prediction.spread.toFixed(1)} pts</span>
+                <span className={`font-extrabold text-xl mt-1 ${prediction.winner.TeamID === prediction.team1.TeamID ? 'text-teal-300' : 'text-blue-300'}`}>
+                  {prediction.winner.TeamName} <span className="font-mono">-{prediction.spread.toFixed(1)} pts</span>
                 </span>
               </div>
 
               <div className="bg-white/5 p-4 rounded-xl border border-white/10 flex flex-col">
                 <span className="text-xs uppercase font-mono tracking-wider text-white/60">Matchup Confidence Level</span>
-                <span className="font-extrabold text-xl text-yellow-300 mt-1">
+                <span className={`font-extrabold text-xl mt-1 ${prediction.winner.TeamID === prediction.team1.TeamID ? 'text-teal-300' : 'text-blue-300'}`}>
                   {prediction.confidence}
                 </span>
               </div>
@@ -461,7 +461,7 @@ export default function MatchupPredictorPage() {
                   return (
                     <div key={factor.featureName} className="bg-black/40 p-2.5 rounded-lg border border-white/10 flex justify-between items-center">
                       <span className="text-white/80">{factor.label}</span>
-                      <span className={`font-bold ${isPositiveT1 ? "text-amber-400" : "text-blue-400"}`}>
+                      <span className={`font-bold ${isPositiveT1 ? "text-teal-400" : "text-blue-400"}`}>
                         {isPositiveT1 ? `+${factor.diff.toFixed(2)} (Favors ${prediction.team1.TeamName})` : `${factor.diff.toFixed(2)} (Favors ${prediction.team2.TeamName})`}
                       </span>
                     </div>
@@ -479,7 +479,7 @@ export default function MatchupPredictorPage() {
                   <thead className="bg-white/10 text-white/70 uppercase border-b border-white/10">
                     <tr>
                       <th className="p-3">Stat Metric</th>
-                      <th className="p-3 text-center text-amber-400">{prediction.team1.TeamName} ({prediction.team1.Season})</th>
+                      <th className="p-3 text-center text-teal-400">{prediction.team1.TeamName} ({prediction.team1.Season})</th>
                       <th className="p-3 text-center text-blue-400">{prediction.team2.TeamName} ({prediction.team2.Season})</th>
                     </tr>
                   </thead>
