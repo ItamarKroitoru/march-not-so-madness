@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pandas as pd
 
 METADATA_COLUMNS = {
@@ -190,7 +191,7 @@ def preprocess_X(
     # 1. Copy raw dataframe
     X = raw_X.copy()
 
-    # 3. Drop non-predictive metadata
+    # 2. Drop non-predictive metadata
     columns_to_drop = [
         column for column in METADATA_COLUMNS if column in X.columns
     ]
@@ -231,61 +232,64 @@ def preprocess_train_test(
         exclude_cols: list[str] | None = None,
         diff_suffix: str = "_diff",
         drop_base_features: bool = True,
-        symmetrize_test: bool = True
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
-    Apply symmetrization and deterministic preprocessing to the train and test splits.
+    Prepare train and test data for modeling.
 
-    Args:
-        raw_X_train (pd.DataFrame): Raw training feature dataframe.
-        raw_X_test (pd.DataFrame): Raw testing feature dataframe.
-        y_train (pd.Series): Training target labels.
-        y_test (pd.Series): Testing target labels.
-        prefix1 (str, optional): The prefix identifying the first team's features. Defaults to "team_1_".
-        prefix2 (str, optional): The prefix identifying the second team's features. Defaults to "team_2_".
-        invert_cols (list[str] | None, optional): Columns to mathematically invert during symmetrization. Defaults to None.
-        exclude_cols (list[str] | None, optional): Columns to exempt from processing rules. Defaults to None.
-        diff_suffix (str, optional): Suffix for generated differential features. Defaults to "_diff".
-        drop_base_features (bool, optional): Whether to drop original base columns post-differencing. Defaults to True.
+    Training data is symmetrized.
+    Test data remains one row per real game.
 
-    Returns:
-        tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: The final X_train, X_test, y_train, y_test.
+    Both datasets are converted to the same differential feature representation.
     """
-    # 1. Validate dataset integrity
+
     if raw_X_train.empty or raw_X_test.empty:
-        raise ValueError("Cannot preprocess. Training or test feature matrix is empty.")
-
-    # 2. Symmetrize the datasets
-    print("Processing Training Set:")
-    sym_X_train, sym_y_train = symmetrize_dataset(
-        raw_X_train, y_train, prefix1, prefix2, invert_cols, exclude_cols
-    )
-
-    if symmetrize_test:
-        print("Processing Testing Set:")
-        X_test, y_test = symmetrize_dataset(
-            raw_X_test, y_test, prefix1, prefix2, invert_cols, exclude_cols
+        raise ValueError(
+            "Cannot preprocess. Training or test feature matrix is empty."
         )
-    else:
-        X_test = raw_X_test.copy()
-        y_test = y_test.copy()
 
-    # 3. Preprocess (Differential calculation & Metadata cleanup)
+    # Symmetrize training data only
+    print("Processing Training Set:")
+
+    sym_X_train, sym_y_train = symmetrize_dataset(
+        raw_X_train,
+        y_train,
+        prefix1=prefix1,
+        prefix2=prefix2,
+        invert_cols=invert_cols,
+        exclude_cols=exclude_cols,
+    )
+
+    # Convert train to differential representation
     print("Extracting Differentials for Training Set:")
+
     X_train = preprocess_X(
-        sym_X_train, prefix1, prefix2, diff_suffix, drop_base_features, exclude_cols
+        sym_X_train,
+        prefix1=prefix1,
+        prefix2=prefix2,
+        diff_suffix=diff_suffix,
+        drop_base_features=drop_base_features,
+        exclude_cols=exclude_cols,
     )
 
+    # Convert test to the SAME representation,
+    # but keep one row per actual test game
     print("Extracting Differentials for Testing Set:")
+
     X_test = preprocess_X(
-        X_test, prefix1, prefix2, diff_suffix, drop_base_features, exclude_cols
+        raw_X_test,
+        prefix1=prefix1,
+        prefix2=prefix2,
+        diff_suffix=diff_suffix,
+        drop_base_features=drop_base_features,
+        exclude_cols=exclude_cols,
     )
 
-    # 4. Validate final column alignment
+    # Verify identical model features
     if X_train.columns.tolist() != X_test.columns.tolist():
         raise ValueError(
             "Train and test preprocessing produced different columns. "
-            f"Train columns: {len(X_train.columns)}, Test columns: {len(X_test.columns)}"
+            f"Train columns: {len(X_train.columns)}, "
+            f"Test columns: {len(X_test.columns)}"
         )
 
-    return X_train, X_test, sym_y_train, y_test
+    return X_train, X_test, sym_y_train, y_test.copy()

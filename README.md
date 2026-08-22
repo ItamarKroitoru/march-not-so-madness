@@ -65,7 +65,7 @@ Here are the most important files and folders if you want to poke around the cod
 - **`webapp/src/app/`**: Contains the main pages for the Web App (`/simulator`, `/what-if`, `/insights`).
 - **`webapp/src/components/`**: Reusable UI components (like the Match Simulation animations).
 - **`src/rating/team_rating_algorithm.py`**: The Python script that originally calculates team Elo ratings from raw Kaggle data.
-- **`src/notebooks/LR_results_analysis.ipynb`**: Our Jupyter notebook containing the deep-dive training and evaluation of the Logistic Regression model.
+- **`src/notebooks/notebook_orchestrator.ipynb`**: Our Jupyter notebook orchestrator containing the feature engineering, model training, and evaluation pipeline.
 - **`webapp/src/data/`**: The JSON datasets powering the web application.
 
 Enjoy predicting the madness! 🏀

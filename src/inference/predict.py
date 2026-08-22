@@ -12,7 +12,7 @@ from src.inference.matchup_features import build_matchup_features
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-MODEL_PATH = PROJECT_ROOT / "artifacts" / "logistic_model.joblib"
+MODEL_PATH = PROJECT_ROOT / "artifacts" / "logistic_regression.joblib"
 FEATURE_COLUMNS_PATH = (
     PROJECT_ROOT / "artifacts" / "feature_columns.json"
 )
