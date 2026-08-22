@@ -3,7 +3,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "NCAA March Not-So-Madness | Multi-Season ML Predictor",
+  title: "NCAA March Not-So-Madness | Multi-Season Predictor",
   description: "Multi-Season NCAA Basketball Predictor & Bracket Simulator (2003-2026)",
 };
 

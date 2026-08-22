@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Swords, LineChart, FileText, Menu, X, Sparkles, Gamepad2 } from "lucide-react";
+import { LayoutDashboard, Swords, FileText, Menu, X, Gamepad2, TrendingUp, Sparkles } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -11,9 +11,9 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/predictor", label: "What-If Predictor", icon: Swords },
-    { href: "/matches", label: "Match Simulator", icon: Gamepad2 },
-    { href: "/insights", label: "Insights", icon: LineChart },
+    { href: "/what-if", label: "What-If Predictor", icon: Swords },
+    { href: "/simulator", label: "Match Simulator", icon: Gamepad2 },
+    { href: "/insights", label: "Model Insights", icon: TrendingUp },
     { href: "/report", label: "Report", icon: FileText },
   ];
 

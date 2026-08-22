@@ -334,7 +334,7 @@ export default function MatchupPredictorPage() {
           className="chalk-button px-12 py-4 text-xl md:text-2xl font-black flex items-center gap-3 mb-10 shadow-2xl hover:scale-105 transition-transform disabled:opacity-50 cursor-pointer tracking-wider rounded-2xl"
         >
           <Calculator size={30} className="text-yellow-400" />
-          {loading ? "RUNNING ML INFERENCE..." : "PREDICT MATCHUP"}
+          {loading ? "RUNNING INFERENCE..." : "PREDICT MATCHUP"}
         </button>
 
         {/* PREDICTION RESULTS SECTION */}
@@ -448,7 +448,7 @@ export default function MatchupPredictorPage() {
               </div>
             </div>
 
-            {/* KEY PREDICTIVE FACTORS (ML IMPORTS) */}
+            {/* KEY PREDICTIVE FACTORS (IMPORTS) */}
             <div className="bg-white/5 p-5 rounded-2xl border border-white/10 mb-8">
               <h3 className="text-lg font-bold chalk-text text-amber-300 mb-3 flex items-center gap-2">
                 <TrendingUp size={20} className="text-amber-400" />

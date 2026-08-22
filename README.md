@@ -18,13 +18,13 @@ Welcome to **March Not-So-Madness**! This project uses a Logistic Regression mod
 
 Our web application features three main interactive tools:
 
-### 🎮 1. The Simulator (`/matches`)
+### 🎮 1. The Simulator (`/simulator`)
 Watch our Machine Learning model predict real matches from the 2026 NCAA tournament! 
 - Simulate games day-by-day.
 - View real-time ground truth verdicts.
 - Track the model's accuracy streak.
 
-### 🔮 2. What-If Predictor (`/predictor`)
+### 🔮 2. What-If Predictor (`/what-if`)
 Ever wondered who would win between the 2015 Kentucky Wildcats and the 2024 UConn Huskies?
 - Pit any two teams from 2003 to 2026 against each other.
 - See the exact probability of each team winning.
@@ -62,7 +62,7 @@ Our prediction engine uses a **Logistic Regression** model. Instead of relying o
 
 Here are the most important files and folders if you want to poke around the code:
 
-- **`webapp/src/app/`**: Contains the main pages for the Web App (`/matches`, `/predictor`, `/insights`).
+- **`webapp/src/app/`**: Contains the main pages for the Web App (`/simulator`, `/what-if`, `/insights`).
 - **`webapp/src/components/`**: Reusable UI components (like the Match Simulation animations).
 - **`src/rating/team_rating_algorithm.py`**: The Python script that originally calculates team Elo ratings from raw Kaggle data.
 - **`src/notebooks/LR_results_analysis.ipynb`**: Our Jupyter notebook containing the deep-dive training and evaluation of the Logistic Regression model.

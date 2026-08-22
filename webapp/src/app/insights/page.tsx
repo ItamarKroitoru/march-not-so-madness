@@ -51,7 +51,7 @@ export default function InsightsPage() {
       step: "03",
       title: "Logistic Model",
       icon: Calculator,
-      desc: "Apply trained ML weights to calculate log-odds.",
+      desc: "Apply trained weights to calculate log-odds.",
     },
     {
       step: "04",
