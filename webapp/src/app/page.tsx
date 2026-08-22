@@ -7,13 +7,13 @@ export default function Dashboard() {
   const modules = [
     {
       title: "What-If Predictor",
-      href: "/predictor",
+      href: "/what-if",
       icon: Swords,
       color: "group-hover:text-amber-300",
     },
     {
       title: "Match Simulator",
-      href: "/matches",
+      href: "/simulator",
       icon: Gamepad2,
       color: "group-hover:text-amber-300",
     },
