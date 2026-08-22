@@ -14,6 +14,14 @@ Welcome to **March Not-So-Madness**! This project uses a Logistic Regression mod
 
 ---
 
+## 🚀 Try It Live
+
+The application is fully deployed online and ready to play with!
+
+👉 **[Launch March Not-So-Madness on Vercel](https://march-not-so-madness.vercel.app/)** 👈
+
+---
+
 ## 🌟 Features Overview
 
 Our web application features three main interactive tools:
@@ -35,14 +43,6 @@ Look under the hood of our Machine Learning algorithm.
 - Explore the Logistic Regression feature weights.
 - Understand how factors like Win Percentage, PPG, and Elo impact the model.
 - View the model's overall historical accuracy.
-
----
-
-## 🚀 Try It Live
-
-The application is fully deployed online and ready to play with!
-
-👉 **[Launch March Not-So-Madness on Vercel](https://march-not-so-madness.vercel.app/)** 👈
 
 ---
 
