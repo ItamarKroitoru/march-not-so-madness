@@ -43,7 +43,7 @@ export default function Dashboard() {
           </span>
         </h1>
         <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-3">
-          Final Project &bull; Needle in a Haystack &bull; HUJI
+          Final Project &bull; A Needle in a Data Haystack &bull; HUJI
         </p>
       </div>
 
@@ -99,7 +99,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="w-full text-center text-xs md:text-sm font-mono text-white/40 border-t border-white/10 pt-6">
-        Final Project for Needle in a Haystack Course &bull; HUJI
+        Final Project &bull; A Needle in a Data Haystack Course &bull; HUJI
       </footer>
 
     </main>

@@ -1,7 +1,7 @@
 # March Not-So Madness 🏀 **[GitHub](https://github.com/ItamarKroitoru/march-not-so-madness)** 🏀 **[Live App](https://march-not-so-madness.vercel.app/)** 🏀 **[Report](https://march-not-so-madness.vercel.app/final_report.pdf)**
 
 > **NCAA College Basketball Match Predictor**  
-> *HUJI Needle in a Haystack Course Final Project*
+> *HUJI A Needle in a Data Haystack Course Final Project*
 
 Welcome to **March Not-So Madness**!
 This project uses a Logistic Regression model to predict the outcomes of NCAA college basketball games.
