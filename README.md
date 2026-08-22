@@ -18,7 +18,7 @@ We've built an interactive web application to explore the model's predictions, s
 
 ### 🚀 Try It Live
 
-**[Launch March Not-So Madness on Vercel](https://march-not-so-madness.vercel.app/)**
+**[Launch March Not-So Madness](https://march-not-so-madness.vercel.app/)**
 
 ---
 
