@@ -10,9 +10,9 @@ We've built an interactive web application to explore the model's predictions, s
 ---
 
 ## 👥 Meet the Team
-- **Itamar Kroitoru**
 - **Barak Schwartz**
 - **Itay Maman**
+- **Itamar Kroitoru**
 
 ---
 
