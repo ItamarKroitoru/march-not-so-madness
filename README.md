@@ -1,5 +1,4 @@
-# 🏀 March Not-So Madness 🏀 
-**[Live WebApp](https://march-not-so-madness.vercel.app/)**
+# 🏀 March Not-So Madness 🏀  - **[Live WebApp](https://march-not-so-madness.vercel.app/)**
 
 > **NCAA College Basketball Match Predictor**  
 > *HUJI Needle in a Haystack Course Final Project*
