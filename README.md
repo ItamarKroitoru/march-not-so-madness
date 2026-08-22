@@ -8,9 +8,9 @@ Welcome to **March Not-So-Madness**! This project uses a Logistic Regression mod
 ---
 
 ## 👥 Meet the Team
-- **Itamar Kroitoru** (ID: 209173533)
-- **Barak Schwartz** (ID: 327359592)
-- **Itay Maman** (ID: 206554677)
+- **Itamar Kroitoru**
+- **Barak Schwartz**
+- **Itay Maman**
 
 ---
 

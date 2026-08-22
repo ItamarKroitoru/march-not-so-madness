@@ -150,7 +150,7 @@ export default function MatchesAnalysisPage() {
           <span>MATCH SIMULATOR</span>
         </h1>
         <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-3">
-          Check the Model's Performance on the 2026 Season Test Set
+          Check the Model&apos;s Performance on the 2026 Season Test Set
         </p>
       </div>
 
