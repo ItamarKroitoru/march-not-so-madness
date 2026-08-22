@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trophy, Swords, Calculator, Calendar, MapPin, TrendingUp, CheckCircle2, XCircle, Sparkles, ExternalLink, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { Trophy, Swords, Calculator, Calendar, MapPin, TrendingUp, CheckCircle2, XCircle, ChevronDown } from "lucide-react";
 import { TeamState, PredictionResult, MatchRecord } from "../../lib/types";
 
 export default function MatchupPredictorPage() {
@@ -327,40 +326,6 @@ export default function MatchupPredictorPage() {
         </div>
 
         {/* Ground-Truth Historical Match Alert if available */}
-        {historicalMatch && (
-          <div className="w-full bg-emerald-950/40 border border-emerald-400/40 p-4 rounded-2xl mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300">
-                <Sparkles size={22} />
-              </div>
-              <div>
-                <span className="text-xs uppercase font-mono font-bold text-amber-300 block">
-                  Ground-Truth Matchup Found ({historicalMatch.season} Season &bull; Day {historicalMatch.dayNum})
-                </span>
-                <span className="text-sm text-white font-mono">
-                  Actual Winner: <strong className="text-emerald-300">{historicalMatch.actualWinner}</strong> &bull; Model Predicted: <strong className="text-yellow-300">{historicalMatch.predictedWinner}</strong>
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setLocation(historicalMatch.location)}
-                className="px-3 py-1.5 text-xs font-mono font-bold bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors cursor-pointer"
-                title="Apply court location from the real game"
-              >
-                Use Real Location ({historicalMatch.location === 1 ? "Team 1 Home" : historicalMatch.location === -1 ? "Team 2 Home" : "Neutral"})
-              </button>
-              <Link
-                href={`/matches?team=${encodeURIComponent(historicalMatch.team1Name)}&day=${historicalMatch.dayNum}`}
-                className="px-3 py-1.5 text-xs font-mono font-bold bg-amber-400/20 text-amber-300 hover:bg-amber-400/30 border border-amber-400/30 rounded-lg transition-colors flex items-center gap-1"
-              >
-                <span>View in Match Analysis</span>
-                <ExternalLink size={12} />
-              </Link>
-            </div>
-          </div>
-        )}
 
         {/* Predict Action Button */}
         <button
