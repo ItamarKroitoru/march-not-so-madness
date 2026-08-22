@@ -58,6 +58,48 @@ Our prediction engine uses a **Logistic Regression** model. Instead of relying o
 
 ---
 
+## 💻 Running the Notebooks Locally
+
+To inspect the data pipeline, train the models, or run the orchestrator notebook on your machine:
+
+### 1. Install Dependencies
+
+Using Python `venv`:
+```bash
+# Create & activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install required dependencies
+pip install -r requirements.txt
+```
+
+*(Or with **Conda**:)*
+```bash
+conda create -n march-madness python=3.10 -y
+conda activate march-madness
+pip install -r requirements.txt
+```
+
+### 2. Launch the Orchestrator Notebook
+
+Launch Jupyter from the repository root:
+
+```bash
+jupyter notebook
+```
+
+Open **`src/notebooks/notebook_orchestrator.ipynb`** and select **Kernel ➔ Restart & Run All**.
+
+The notebook will automatically:
+1. Load historical NCAA match and team data (2003–2026) pre-bundled in `data/`.
+2. Compute dynamic Elo ratings and rolling team states.
+3. Perform feature engineering, correlation analysis, and feature selection.
+4. Train and evaluate our predictive models (Logistic Regression, LightGBM, Ensemble).
+5. Export model artifacts.
+
+---
+
 ## 📂 Project Structure
 
 Here are the most important files and folders if you want to poke around the code:
@@ -69,3 +111,4 @@ Here are the most important files and folders if you want to poke around the cod
 - **`webapp/src/data/`**: The JSON datasets powering the web application.
 
 Enjoy predicting the madness! 🏀
+
