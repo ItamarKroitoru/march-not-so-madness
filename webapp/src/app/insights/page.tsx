@@ -1,9 +1,30 @@
 "use client";
 
-import { LineChart, Cpu, Sparkles, Database, Calculator, CheckCircle2, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { LineChart, Cpu, Sparkles, Database, Calculator, CheckCircle2, ArrowRight, BarChart3 } from "lucide-react";
 import { MODEL_WEIGHTS, FEATURE_LABELS } from "@/lib/predictor";
+import { DailyPerformance, MatchAnalysisSummary } from "@/lib/types";
 
 export default function InsightsPage() {
+  const [dailyPerformance, setDailyPerformance] = useState<DailyPerformance[]>([]);
+  const [summary, setSummary] = useState<MatchAnalysisSummary | null>(null);
+  const [hoveredDay, setHoveredDay] = useState<DailyPerformance | null>(null);
+
+  useEffect(() => {
+    fetch("/api/matches?summaryOnly=1")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.dailyPerformance) setDailyPerformance(data.dailyPerformance);
+        if (data.summary) setSummary(data.summary);
+      })
+      .catch((err) => console.error("Failed to load insights daily performance:", err));
+  }, []);
+
+  const maxDailyGames = useMemo(() => {
+    if (dailyPerformance.length === 0) return 100;
+    return Math.max(...dailyPerformance.map((d) => d.total));
+  }, [dailyPerformance]);
+
   // Sort features by weight
   const sortedFeatures = Object.entries(MODEL_WEIGHTS)
     .map(([key, weight]) => ({
@@ -12,14 +33,6 @@ export default function InsightsPage() {
       weight,
     }))
     .sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight));
-
-  const positiveFeatures = sortedFeatures
-    .filter((f) => f.weight > 0)
-    .slice(0, 5);
-
-  const negativeFeatures = sortedFeatures
-    .filter((f) => f.weight < 0)
-    .slice(0, 5);
 
   const flowSteps = [
     {
@@ -38,7 +51,7 @@ export default function InsightsPage() {
       step: "03",
       title: "Logistic Model",
       icon: Calculator,
-      desc: "Apply trained ML weights to calculate log-odds.",
+      desc: "Apply trained weights to calculate log-odds.",
     },
     {
       step: "04",
@@ -62,8 +75,120 @@ export default function InsightsPage() {
         </p>
       </div>
 
+      {/* DAILY PREDICTION PERFORMANCE PLOT (LR Results Analysis Cell 9) */}
+      <div className="chalk-border p-6 md:p-8 bg-black/40 rounded-3xl w-full shadow-2xl mb-10">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <div className="flex items-center justify-center gap-2.5 mb-3">
+            <BarChart3 className="text-amber-400" size={26} />
+            <h2 className="text-xl md:text-2xl font-bold chalk-text text-white">
+              Prediction Performance Throughout the 2026 Season - Test Set
+            </h2>
+          </div>
+          <div className="inline-flex items-center justify-center px-6 py-2 rounded-2xl border-2 border-yellow-300/80 bg-black/60 shadow-lg">
+            <p className="text-lg sm:text-2xl font-mono text-yellow-300 font-extrabold tracking-wide">
+              Overall Test Accuracy: {summary ? `${summary.overallAccuracy}%` : "71.08%"}
+            </p>
+          </div>
+        </div>
+
+        {/* Chart Box */}
+        <div className="w-full bg-black/60 p-4 rounded-2xl border border-white/10 relative">
+          
+          {/* Active Hover Daily Success Display */}
+          <div className="min-h-[28px] mb-2 flex items-center justify-center text-xs font-mono">
+            {hoveredDay ? (
+              <span className="text-yellow-300 font-bold bg-white/10 px-3.5 py-1 rounded-lg border border-yellow-300/30 shadow-sm animate-fade-in">
+                {hoveredDay.accuracy}% Success Rate
+              </span>
+            ) : (
+              <span className="text-white/40 italic">Hover a bar for success percentage</span>
+            )}
+          </div>
+
+          {/* Stacked Bar Visualizer */}
+          <div className="h-48 md:h-56 w-full flex items-end gap-[2px] md:gap-[3px] overflow-x-auto pb-2 pt-4">
+            {dailyPerformance.length === 0 ? (
+              <div className="w-full h-full flex items-center justify-center text-white/50 font-mono text-xs">
+                Loading daily performance metrics...
+              </div>
+            ) : (
+              dailyPerformance.map((day) => {
+                const totalPct = Math.max(((day.total) / maxDailyGames) * 100, 3);
+                const correctPct = (day.correct / (day.total || 1)) * 100;
+                const incorrectPct = (day.incorrect / (day.total || 1)) * 100;
+
+                return (
+                  <div
+                    key={day.dayNum}
+                    style={{ height: `${totalPct}%` }}
+                    onMouseEnter={() => setHoveredDay(day)}
+                    onMouseLeave={() => setHoveredDay(null)}
+                    className="flex-1 min-w-[5px] md:min-w-[7px] max-w-[14px] flex flex-col justify-end group rounded-t-sm overflow-hidden cursor-pointer transition-opacity hover:opacity-80"
+                  >
+                    {/* Incorrect / Upset (Top Red Portion) */}
+                    <div
+                      style={{ height: `${incorrectPct}%` }}
+                      className="w-full bg-rose-500/90 shrink-0"
+                    />
+                    {/* Correct (Bottom Green Portion) */}
+                    <div
+                      style={{ height: `${correctPct}%` }}
+                      className="w-full bg-emerald-500/90 shrink-0"
+                    />
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* X Axis Label */}
+          <div className="flex justify-center items-center text-xs font-mono text-white/50 border-t border-white/10 pt-2 px-1 mt-1">
+            <span>Day of the Season</span>
+          </div>
+        </div>
+
+        {/* Chart Footer with Legend & Explanation */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-1 text-xs font-mono text-white/70">
+          <div>
+            <p className="text-center sm:text-left text-emerald-300 font-bold text-sm">
+              {summary ? `${summary.correctCount.toLocaleString()}/${summary.totalGames.toLocaleString()} games predicted successfully` : "3,857/5,426 games predicted successfully"}
+            </p>
+            <p className="text-center sm:text-left text-white/50 mt-0.5">
+              Each stacked bar represents games played on a given day. Bar height indicates total games.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-4 bg-black/50 px-3.5 py-1.5 rounded-xl border border-white/10 shrink-0">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3.5 h-3.5 rounded-sm bg-emerald-500 inline-block" />
+              <span className="text-white/90 font-bold">Correct</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-3.5 h-3.5 rounded-sm bg-rose-500 inline-block" />
+              <span className="text-white/90 font-bold">Incorrect</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* QUICK SUMMARY SNAPSHOT */}
+      <div className="chalk-border p-6 bg-black/40 grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-mono rounded-3xl w-full mb-10">
+        <div>
+          <span className="text-xs text-white/50 block uppercase tracking-wider">Algorithm</span>
+          <span className="text-xl font-bold text-emerald-300 mt-1 block">Logistic Regression</span>
+        </div>
+        <div>
+          <span className="text-xs text-white/50 block uppercase tracking-wider">Feature Set</span>
+          <span className="text-xl font-bold text-amber-300 mt-1 block">33 Differentials</span>
+        </div>
+        <div>
+          <span className="text-xs text-white/50 block uppercase tracking-wider">Data Span</span>
+          <span className="text-xl font-bold text-yellow-300 mt-1 block">2003 &ndash; 2026</span>
+        </div>
+      </div>
+
       {/* MATCHUP PIPELINE */}
-      <div className="chalk-border p-8 md:p-10 bg-black/40 mb-10 rounded-3xl">
+      <div className="chalk-border p-8 md:p-10 bg-black/40 mb-10 rounded-3xl w-full">
         <div className="flex items-center gap-3 mb-6">
           <Cpu className="text-emerald-400" size={28} />
           <h2 className="text-2xl md:text-3xl font-bold chalk-text text-white">
@@ -98,74 +223,39 @@ export default function InsightsPage() {
       </div>
 
       {/* TOP FEATURE WEIGHTS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        
-        {/* POSITIVE FACTORS */}
-        <div className="chalk-border p-8 bg-emerald-950/30 border-emerald-500/40 rounded-3xl">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingUp size={26} className="text-emerald-400" />
-            <h3 className="text-2xl font-bold chalk-text text-emerald-300">
-              Key Advantage Features
-            </h3>
+      <div className="chalk-border p-8 md:p-10 bg-black/40 mb-10 rounded-3xl w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <Sparkles className="text-blue-400" size={28} />
+            <h2 className="text-2xl md:text-3xl font-bold chalk-text text-white">
+              Top 10 Impactful Features
+            </h2>
           </div>
-          <p className="text-xs font-mono text-white/60 mb-6">
-            Higher values boost win probability
+          <p className="text-xs md:text-sm font-mono text-white/60 max-w-md">
+            Features with the highest absolute WEIGHTS
           </p>
+        </div>
 
-          <div className="space-y-3">
-            {positiveFeatures.map((f) => (
-              <div key={f.key} className="bg-black/50 p-4 rounded-xl border border-emerald-500/20 flex justify-between items-center">
-                <span className="text-base font-semibold text-white">{f.label}</span>
-                <span className="font-mono font-bold text-sm bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-lg border border-emerald-400/30">
-                  +{f.weight.toFixed(3)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          {sortedFeatures.slice(0, 10).map((f) => {
+            const isPositive = f.weight > 0;
+            return (
+              <div key={f.key} className="bg-black/50 p-4 rounded-xl border border-white/10 flex justify-between items-center group hover:bg-black/70 transition-colors">
+                <span className="text-base font-semibold text-white group-hover:text-white/90">{f.label}</span>
+                <span className={`font-mono font-bold text-sm px-3 py-1 rounded-lg border ${
+                  isPositive 
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/30" 
+                    : "bg-amber-500/20 text-amber-300 border-amber-400/30"
+                }`}>
+                  {isPositive ? "+" : ""}{f.weight.toFixed(3)}
                 </span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* NEGATIVE FACTORS */}
-        <div className="chalk-border p-8 bg-amber-950/30 border-amber-500/40 rounded-3xl">
-          <div className="flex items-center gap-3 mb-4">
-            <TrendingDown size={26} className="text-amber-400" />
-            <h3 className="text-2xl font-bold chalk-text text-amber-300">
-              Key Penalty Features
-            </h3>
-          </div>
-          <p className="text-xs font-mono text-white/60 mb-6">
-            Higher values reduce win probability
-          </p>
-
-          <div className="space-y-3">
-            {negativeFeatures.map((f) => (
-              <div key={f.key} className="bg-black/50 p-4 rounded-xl border border-amber-500/20 flex justify-between items-center">
-                <span className="text-base font-semibold text-white">{f.label}</span>
-                <span className="font-mono font-bold text-sm bg-amber-500/20 text-amber-300 px-3 py-1 rounded-lg border border-amber-400/30">
-                  {f.weight.toFixed(3)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-      </div>
-
-      {/* QUICK SUMMARY SNAPSHOT */}
-      <div className="chalk-border p-6 bg-black/40 grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-mono rounded-3xl">
-        <div>
-          <span className="text-xs text-white/50 block uppercase tracking-wider">Algorithm</span>
-          <span className="text-xl font-bold text-emerald-300 mt-1 block">Logistic Regression</span>
-        </div>
-        <div>
-          <span className="text-xs text-white/50 block uppercase tracking-wider">Feature Set</span>
-          <span className="text-xl font-bold text-amber-300 mt-1 block">33 Differentials</span>
-        </div>
-        <div>
-          <span className="text-xs text-white/50 block uppercase tracking-wider">Data Span</span>
-          <span className="text-xl font-bold text-yellow-300 mt-1 block">2003 &ndash; 2026</span>
+            );
+          })}
         </div>
       </div>
 
     </main>
   );
 }
+

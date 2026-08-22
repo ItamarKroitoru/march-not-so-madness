@@ -91,3 +91,102 @@ export interface PredictionResult {
   location: number; // 1 = Team 1 Home, 0 = Neutral, -1 = Team 1 Away
   keyFactors: FeatureImpact[];
 }
+
+export interface TeamPreGameStats {
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  record: string;
+  winPct: number;
+  ppg: number;
+  papg: number;
+  fgPct: number;
+  fg3Pct: number;
+  ftPct: number;
+  offReb: number;
+  defReb: number;
+  ast: number;
+  to: number;
+  stl: number;
+  blk: number;
+  streak: string;
+  pointDiff: number;
+  last5WinPct: number;
+  avgOpponentWinPct?: number;
+}
+
+export interface MatchScore {
+  team1Score: number;
+  team2Score: number;
+  winnerScore: number;
+  loserScore: number;
+  numOt: number;
+  scoreDiff: number;
+}
+
+export interface MatchKeyFactor {
+  label: string;
+  val: string;
+  favors: string;
+}
+
+export interface MatchRecord {
+  id: string;
+  season: number;
+  dayNum: number;
+  team1Id: number;
+  team1Name: string;
+  team2Id: number;
+  team2Name: string;
+  location: number; // 1 = Team 1 Home, 0 = Neutral, -1 = Team 2 Home
+  locationLabel: string;
+  yTrue: number; // 1 = Team 1 won, 0 = Team 2 won
+  yPred: number; // 1 = Team 1 predicted, 0 = Team 2 predicted
+  probTeam1: number;
+  probTeam2: number;
+  actualWinner: string;
+  actualLoser: string;
+  predictedWinner: string;
+  predictedLoser: string;
+  correct: boolean;
+  isUpset: boolean;
+  confidence: string;
+  spread?: number;
+  score?: MatchScore;
+  team1Stats?: TeamPreGameStats;
+  team2Stats?: TeamPreGameStats;
+  keyFactors?: MatchKeyFactor[];
+}
+
+export interface DailyPerformance {
+  dayNum: number;
+  correct: number;
+  incorrect: number;
+  total: number;
+  accuracy: number;
+}
+
+export interface MatchAnalysisSummary {
+  season: number;
+  totalGames: number;
+  correctCount: number;
+  incorrectCount: number;
+  overallAccuracy: number;
+  homeAccuracy: number;
+  awayAccuracy: number;
+  neutralAccuracy: number;
+  heavyFavoriteAccuracy: number;
+  totalUpsets: number;
+  availableDays?: number[];
+}
+
+export interface MatchesResponse {
+  summary: MatchAnalysisSummary;
+  dailyPerformance: DailyPerformance[];
+  matches: MatchRecord[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+

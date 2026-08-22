@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Swords, Trophy, LineChart, FileText, Menu, X, Sparkles } from "lucide-react";
+import { LayoutDashboard, Swords, FileText, Menu, X, Gamepad2, TrendingUp, Sparkles } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -11,16 +11,16 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/predictor", label: "Predictor", icon: Swords },
-    { href: "/bracket", label: "Bracket", icon: Trophy },
-    { href: "/insights", label: "Insights", icon: LineChart },
+    { href: "/what-if", label: "What-If Predictor", icon: Swords },
+    { href: "/simulator", label: "Match Simulator", icon: Gamepad2 },
+    { href: "/insights", label: "Model Insights", icon: TrendingUp },
     { href: "/report", label: "Report", icon: FileText },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-black/50 border-b border-white/20">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 flex items-center justify-between gap-4">
-        
+
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
           <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-emerald-700/60 border border-emerald-400/40 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
@@ -44,11 +44,10 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl text-sm lg:text-base font-medium flex items-center gap-2 whitespace-nowrap transition-all ${
-                  isActive
+                className={`px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl text-sm lg:text-base font-medium flex items-center gap-2 whitespace-nowrap transition-all ${isActive
                     ? "bg-white/20 text-yellow-300 border border-yellow-300/40 shadow-inner font-semibold"
                     : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
+                  }`}
               >
                 <Icon size={18} className={isActive ? "text-yellow-300" : "text-white/70"} />
                 <span>{link.label}</span>
@@ -79,11 +78,10 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-lg font-medium transition-colors ${isActive
                     ? "bg-white/20 text-yellow-300 border border-yellow-300/30"
                     : "text-white/80 hover:bg-white/10"
-                }`}
+                  }`}
               >
                 <Icon size={22} className={isActive ? "text-yellow-300" : "text-white/70"} />
                 <span>{link.label}</span>
