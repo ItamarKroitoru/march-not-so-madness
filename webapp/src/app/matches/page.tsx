@@ -4,17 +4,15 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Swords,
   Trophy,
-  CheckCircle2,
   Calendar,
-  Flame,
   ChevronLeft,
   ChevronRight,
-  Zap,
-  Activity,
   Sparkles,
   Gamepad2,
 } from "lucide-react";
 import { MatchRecord, DailyPerformance } from "@/lib/types";
+import { MatchSimulationResults } from "@/components/MatchSimulationResults";
+import { MatchVerdict } from "@/components/MatchVerdict";
 
 export default function MatchesAnalysisPage() {
   const [loading, setLoading] = useState(true);
@@ -22,7 +20,7 @@ export default function MatchesAnalysisPage() {
   const [matches, setMatches] = useState<MatchRecord[]>([]);
 
   // Step 1: Selected Day of Season
-  const [selectedDay, setSelectedDay] = useState<number>(2);
+  const [selectedDay, setSelectedDay] = useState<number>(16);
 
   // Step 2: Selected Match
   const [selectedMatch, setSelectedMatch] = useState<MatchRecord | null>(null);
@@ -40,16 +38,18 @@ export default function MatchesAnalysisPage() {
       .then((data) => {
         if (data.dailyPerformance) {
           setDailyPerformance(data.dailyPerformance);
-          if (data.dailyPerformance.length > 0) {
-            setSelectedDay(data.dailyPerformance[0].dayNum);
-          }
         }
         if (data.matches && data.matches.length > 0) {
           setMatches(data.matches);
           // Set default selected match to first game on initial day
-          const initialDayGames = data.matches.filter((m: MatchRecord) => m.dayNum === (data.dailyPerformance[0]?.dayNum || 2));
+          const initialDayGames = data.matches.filter((m: MatchRecord) => m.dayNum === 16);
           if (initialDayGames.length > 0) {
             setSelectedMatch(initialDayGames[0]);
+          } else {
+            setSelectedMatch(data.matches[0]);
+            if (data.matches[0]) {
+               setSelectedDay(data.matches[0].dayNum);
+            }
           }
         }
       })
@@ -152,11 +152,11 @@ export default function MatchesAnalysisPage() {
       {/* SEPARATE WORKFLOW DEMO CARD */}
       <div className="chalk-border p-6 md:p-8 max-w-xl w-full mx-auto mb-8 bg-black/40 text-center rounded-3xl shadow-xl font-mono">
         <span className="text-amber-300 font-bold chalk-text text-base md:text-xl tracking-wide uppercase block mb-4">
-          Live Next-Season Workflow Demo:
+          How to Use:
         </span>
         <div className="flex flex-col items-center gap-1.5 text-sm md:text-base font-bold text-amber-100/90 max-w-sm mx-auto">
           <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
-            1. Select Date
+            1. Select Day
           </span>
           <span className="text-yellow-400 font-black text-sm">↓</span>
           <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
@@ -164,39 +164,36 @@ export default function MatchesAnalysisPage() {
           </span>
           <span className="text-yellow-400 font-black text-sm">↓</span>
           <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
-            3. Pre-Game ML Prediction
+            3. Pre-Game Prediction
           </span>
           <span className="text-yellow-400 font-black text-sm">↓</span>
           <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
-            4. Play Game
+            4. Play Simulation
           </span>
           <span className="text-yellow-400 font-black text-sm">↓</span>
-          <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center text-emerald-300">
-            5. Ground-Truth Reveal
+          <span className="bg-black/60 px-5 py-1.5 rounded-xl border border-white/15 shadow w-full text-center">
+            5. Check Model Prediction
           </span>
         </div>
       </div>
 
-      {/* STEP 1: DATE / DAY SELECTOR BAR */}
+      {/* STEP 1: DAY SELECTOR BAR */}
       <div className="chalk-border p-5 w-full bg-black/50 mb-8 rounded-3xl shadow-xl">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
 
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
               <Calendar size={20} />
             </div>
             <div>
-              <span className="text-xs uppercase font-mono text-amber-400 font-bold tracking-wider block">
-                Step 1 &bull; Season 2026 Game Day
-              </span>
               <h2 className="text-xl md:text-2xl font-bold chalk-text text-white">
-                Select Date of the Season
+                Select Day of the Season
               </h2>
             </div>
           </div>
 
-          {/* Quick Date Stepper and Dropdown */}
-          <div className="flex items-center gap-2 w-full md:w-auto">
+          {/* Quick Day Stepper and Current Selected Indicator */}
+          <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
             <button
               onClick={() => {
                 const idx = availableDays.indexOf(selectedDay);
@@ -204,25 +201,14 @@ export default function MatchesAnalysisPage() {
               }}
               disabled={availableDays.indexOf(selectedDay) <= 0}
               className="p-2 bg-black/60 border border-white/20 rounded-xl disabled:opacity-30 hover:bg-white/10 text-white cursor-pointer"
-              title="Previous Date"
+              title="Previous Day"
             >
               <ChevronLeft size={20} />
             </button>
 
-            <select
-              value={selectedDay}
-              onChange={(e) => handleDayChange(Number(e.target.value))}
-              className="chalk-input py-2.5 px-4 text-sm md:text-base font-mono font-bold rounded-xl bg-black/70 border border-white/30 text-yellow-300 cursor-pointer flex-1 md:flex-none"
-            >
-              {availableDays.map((d) => {
-                const count = matches.filter((m) => m.dayNum === d).length;
-                return (
-                  <option key={d} value={d} className="bg-zinc-900 text-white">
-                    Day {d} &bull; {count} {count === 1 ? "match" : "matches"}
-                  </option>
-                );
-              })}
-            </select>
+            <span className="px-4 py-2 bg-black/70 border border-amber-400/40 rounded-xl text-yellow-300 font-mono font-bold text-sm">
+              Day {selectedDay - 1} &bull; {dayMatches.length} {dayMatches.length === 1 ? "game" : "games"}
+            </span>
 
             <button
               onClick={() => {
@@ -231,7 +217,7 @@ export default function MatchesAnalysisPage() {
               }}
               disabled={availableDays.indexOf(selectedDay) >= availableDays.length - 1}
               className="p-2 bg-black/60 border border-white/20 rounded-xl disabled:opacity-30 hover:bg-white/10 text-white cursor-pointer"
-              title="Next Date"
+              title="Next Day"
             >
               <ChevronRight size={20} />
             </button>
@@ -239,51 +225,55 @@ export default function MatchesAnalysisPage() {
 
         </div>
 
-        {/* Quick Date Highlights Pills */}
-        <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-white/10 text-xs font-mono">
-          <span className="text-white/50">Quick Jumps:</span>
-          {[
-            { label: "Opening Games", day: 2 },
-            { label: "Early Season", day: 15 },
-            { label: "Mid-Season", day: 65 },
-            { label: "Rivalry Week", day: 100 },
-            { label: "Tourney Week", day: 130 },
-          ].map((preset) => (
-            <button
-              key={preset.day}
-              onClick={() => handleDayChange(preset.day)}
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${selectedDay === preset.day
-                  ? "bg-amber-400 text-black font-bold"
-                  : "bg-white/5 text-white/70 hover:bg-white/15"
-                }`}
-            >
-              {preset.label} (Day {preset.day})
-            </button>
-          ))}
+        {/* Day Matrix Grid */}
+        <div className="bg-black/40 p-3 rounded-2xl border border-white/10 max-h-52 overflow-y-auto">
+          <div className="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-14 lg:grid-cols-18 gap-1.5 font-mono">
+            {availableDays.map((d) => {
+              const count = matches.filter((m) => m.dayNum === d).length;
+              const isSelected = selectedDay === d;
+              return (
+                <button
+                  key={d}
+                  onClick={() => handleDayChange(d)}
+                  title={`Day ${d - 1} (${count} ${count === 1 ? "game" : "games"})`}
+                  className={`h-9 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${isSelected
+                      ? "bg-amber-400 text-black font-extrabold shadow-[0_0_12px_rgba(251,191,36,0.6)] scale-105 border border-yellow-200 z-10"
+                      : "bg-black/60 text-white/80 hover:text-white hover:bg-white/20 border border-white/10 hover:border-white/30"
+                    }`}
+                >
+                  {d - 1}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* STEP 2: MATCH SELECTOR FOR THIS DAY */}
       <div className="chalk-border p-5 w-full bg-black/50 mb-8 rounded-3xl shadow-xl">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center text-blue-300 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
               <Swords size={20} />
             </div>
             <div>
-              <span className="text-xs uppercase font-mono text-blue-300 font-bold tracking-wider block">
-                Step 2 &bull; Matchups on Day {selectedDay} ({dayMatches.length} Games)
-              </span>
               <h2 className="text-xl md:text-2xl font-bold chalk-text text-white">
-                Pick a Match Scheduled for This Day
+                Pick a Scheduled Match
               </h2>
             </div>
+          </div>
+
+          {/* Selected Day Indicator Badge */}
+          <div className="font-mono text-xs md:text-sm">
+            <span className="px-3.5 py-1.5 rounded-xl bg-amber-400/20 border border-amber-400/40 text-yellow-300 font-bold inline-flex items-center shadow-sm">
+              Day {selectedDay - 1}
+            </span>
           </div>
         </div>
 
         {/* Matchup horizontal scroller / grid */}
         {dayMatches.length === 0 ? (
-          <div className="p-8 text-center text-white/60 font-mono">No matches found for Day {selectedDay}.</div>
+          <div className="p-8 text-center text-white/60 font-mono">No matches found for Day {selectedDay - 1}.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto pr-1">
             {dayMatches.map((m) => {
@@ -325,52 +315,57 @@ export default function MatchesAnalysisPage() {
 
       {/* STEP 3 & 4 & 5: PRE-GAME PREDICTION, SIMULATION & REVEAL SECTION */}
       {selectedMatch && (
-        <div className="chalk-border p-6 md:p-8 w-full bg-black/60 rounded-3xl shadow-2xl relative mb-12">
+        <>
+          <div className="chalk-border p-6 md:p-8 w-full bg-black/60 rounded-3xl shadow-2xl relative mb-8">
 
           {/* Section Header */}
-          <div className="flex items-center justify-between border-b border-white/15 pb-4 mb-6">
-            <div>
-              <span className="text-xs uppercase font-mono text-emerald-400 font-bold tracking-wider block">
-                Step 3 &bull; Pre-Game Model Inference (Zero-Leakage State)
-              </span>
-              <h2 className="text-2xl md:text-4xl font-bold chalk-text text-white mt-1">
-                {selectedMatch.team1Name} vs {selectedMatch.team2Name}
-              </h2>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/15 pb-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold chalk-text text-white">
+                  Pre-Game Prediction
+                </h2>
+              </div>
             </div>
-            <span className="text-xs font-mono bg-white/10 px-3 py-1.5 rounded-xl text-white/80 border border-white/15">
-              {selectedMatch.locationLabel} &bull; Day {selectedMatch.dayNum}
-            </span>
+            {/* Selected Matchup Badge */}
+            <div className="font-mono text-xs md:text-sm">
+              <span className="px-3.5 py-1.5 rounded-xl bg-amber-400/20 border border-amber-400/40 text-yellow-300 font-bold inline-flex items-center shadow-sm">
+                {selectedMatch.team1Name} vs {selectedMatch.team2Name}
+              </span>
+            </div>
           </div>
 
           {/* PRE-GAME MODEL PREDICTION CARD */}
           <div className="bg-emerald-950/30 border border-emerald-500/40 p-6 rounded-3xl mb-8 shadow-xl">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold block mb-1">
-                  ML Model Predicted Winner
-                </span>
-                <h3 className="text-2xl md:text-4xl font-extrabold text-amber-300 chalk-text flex items-center gap-2">
-                  <Trophy className="text-yellow-400" size={32} />
-                  <span>{selectedMatch.predictedWinner}</span>
-                </h3>
-              </div>
-
-              <div className="flex items-center gap-3 font-mono text-xs">
-                <span className="bg-black/60 px-3 py-1.5 rounded-xl border border-white/15 text-white/80">
-                  Confidence: <strong className="text-yellow-300">{selectedMatch.confidence}</strong>
-                </span>
-                {selectedMatch.spread && (
-                  <span className="bg-black/60 px-3 py-1.5 rounded-xl border border-white/15 text-white/80">
-                    Est. Margin: <strong className="text-emerald-400">~{selectedMatch.spread} pts</strong>
-                  </span>
-                )}
-              </div>
+            <div className="flex flex-col items-center justify-center text-center mb-6">
+              <span className="text-xs font-mono uppercase tracking-widest text-white/70 font-bold block mb-1">
+                ML Model Predicted Winner
+              </span>
+              <h3
+                className={`text-2xl md:text-4xl font-extrabold chalk-text flex items-center justify-center gap-2 ${selectedMatch.predictedWinner === selectedMatch.team1Name
+                    ? "text-teal-300"
+                    : "text-blue-500"
+                  }`}
+              >
+                <Trophy
+                  className={
+                    selectedMatch.predictedWinner === selectedMatch.team1Name
+                      ? "text-teal-300"
+                      : "text-blue-500"
+                  }
+                  size={32}
+                />
+                <span>{selectedMatch.predictedWinner}</span>
+              </h3>
             </div>
 
             {/* Model Estimated Win Probability Bar */}
             <div className="mb-6">
               <div className="flex justify-between items-center text-sm font-mono font-bold mb-2">
-                <span className="text-amber-400">
+                <span className="text-teal-300">
                   {selectedMatch.team1Name}: {(selectedMatch.probTeam1 * 100).toFixed(1)}%
                 </span>
                 <span className="text-blue-400">
@@ -381,13 +376,13 @@ export default function MatchesAnalysisPage() {
               <div className="w-full bg-black/60 h-8 rounded-full overflow-hidden flex border-2 border-white/20 font-mono shadow-inner">
                 <div
                   style={{ width: `${(selectedMatch.probTeam1 * 100).toFixed(1)}%` }}
-                  className="bg-gradient-to-r from-amber-500 to-orange-400 text-sm text-black flex items-center justify-center font-extrabold transition-all duration-700"
+                  className="bg-gradient-to-r from-teal-400 to-cyan-300 text-sm text-black flex items-center justify-center font-extrabold transition-all duration-700"
                 >
                   {(selectedMatch.probTeam1 * 100).toFixed(1)}%
                 </div>
                 <div
                   style={{ width: `${(selectedMatch.probTeam2 * 100).toFixed(1)}%` }}
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-sm text-white flex items-center justify-center font-extrabold transition-all duration-700"
+                  className="bg-gradient-to-r from-blue-700 to-indigo-900 text-sm text-white flex items-center justify-center font-extrabold transition-all duration-700"
                 >
                   {(selectedMatch.probTeam2 * 100).toFixed(1)}%
                 </div>
@@ -399,8 +394,8 @@ export default function MatchesAnalysisPage() {
               <table className="w-full text-xs md:text-sm font-mono text-left">
                 <thead className="bg-white/10 text-white/70 uppercase border-b border-white/10">
                   <tr>
-                    <th className="p-3">Pre-Game Stat (Up to Day {selectedMatch.dayNum})</th>
-                    <th className="p-3 text-center text-amber-400">{selectedMatch.team1Name}</th>
+                    <th className="p-3">Pre-Game Stat (Up to Day {selectedMatch.dayNum - 1})</th>
+                    <th className="p-3 text-center text-teal-300">{selectedMatch.team1Name}</th>
                     <th className="p-3 text-center text-blue-400">{selectedMatch.team2Name}</th>
                   </tr>
                 </thead>
@@ -427,169 +422,35 @@ export default function MatchesAnalysisPage() {
                   </tr>
                   <tr>
                     <td className="p-3 text-white/80 font-bold">Current Streak</td>
-                    <td className="p-3 text-center text-amber-300 font-bold">{t1Stats?.streak || "—"}</td>
-                    <td className="p-3 text-center text-blue-300 font-bold">{t2Stats?.streak || "—"}</td>
+                    <td className="p-3 text-center font-bold text-white">
+                      {t1Stats?.streak || "—"}
+                    </td>
+                    <td className="p-3 text-center font-bold text-white">
+                      {t2Stats?.streak || "—"}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
           </div>
+          </div>
 
           {/* STEP 4: LIVE GAME SIMULATION ANIMATION CONTAINER */}
-          <div className="flex flex-col items-center justify-center my-6">
-            {!simulating && !matchRevealed && (
-              <button
-                onClick={handleSimulateGame}
-                className="relative group p-[2px] rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:shadow-[0_0_50px_rgba(236,72,153,0.7)] transition-all duration-300 hover:scale-105 cursor-pointer"
-              >
-                {/* Animated Magic AI Gradient Ring */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-2xl animate-pulse group-hover:opacity-100 opacity-90 transition-opacity" />
-
-                {/* Button Inner Content */}
-                <div className="relative px-8 md:px-12 py-4 bg-zinc-950/90 rounded-[14px] flex items-center gap-4 backdrop-blur-md">
-                  <div className="p-2.5 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 text-white shadow-lg group-hover:rotate-12 transition-transform">
-                    <Sparkles size={26} className="text-yellow-200 fill-yellow-200" />
-                  </div>
-                  <span className="text-xl md:text-2xl font-black chalk-text text-white tracking-wide">
-                    STEP 4: SIMULATE MATCH
-                  </span>
-                </div>
-              </button>
-            )}
-
-            {/* LIVE MATCH IN PROGRESS ANIMATION */}
-            {simulating && (
-              <div className="w-full bg-gradient-to-r from-zinc-950 via-black to-zinc-950 border-2 border-yellow-400/80 p-8 rounded-3xl shadow-2xl animate-fade-in text-center flex flex-col items-center">
-
-                <div className="flex items-center gap-3 text-yellow-300 font-mono text-sm md:text-base font-extrabold uppercase tracking-widest mb-4">
-                  <Activity size={24} className="animate-spin text-yellow-400" />
-                  <span>GAME IN PROGRESS &bull; LIVE COURT SIMULATION</span>
-                  <Zap size={24} className="animate-bounce text-amber-400" />
-                </div>
-
-                {/* Scoreboard Ticker */}
-                <div className="flex items-center justify-center gap-8 md:gap-14 my-4 font-mono">
-                  <div className="text-center">
-                    <span className="text-xs text-amber-400 font-bold block">{selectedMatch.team1Name}</span>
-                    <span className="text-4xl md:text-6xl font-black text-white animate-pulse">
-                      {Math.round((simProgress / 100) * (selectedMatch.score?.team1Score || 75))}
-                    </span>
-                  </div>
-
-                  <div className="text-2xl md:text-4xl font-black text-yellow-400">VS</div>
-
-                  <div className="text-center">
-                    <span className="text-xs text-blue-400 font-bold block">{selectedMatch.team2Name}</span>
-                    <span className="text-4xl md:text-6xl font-black text-white animate-pulse">
-                      {Math.round((simProgress / 100) * (selectedMatch.score?.team2Score || 70))}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Quarter phase text */}
-                <p className="text-base md:text-lg font-mono font-bold text-amber-300 my-2">
-                  {simQuarter}
-                </p>
-
-                {/* Progress bar */}
-                <div className="w-full max-w-md bg-white/10 h-3 rounded-full overflow-hidden my-3 border border-white/20">
-                  <div
-                    style={{ width: `${simProgress}%` }}
-                    className="h-full bg-gradient-to-r from-amber-400 via-yellow-300 to-emerald-400 transition-all duration-300"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+          <MatchSimulationResults
+            selectedMatch={selectedMatch}
+            simulating={simulating}
+            simProgress={simProgress}
+            simQuarter={simQuarter}
+            matchRevealed={matchRevealed}
+            onSimulate={handleSimulateGame}
+          />
 
           {/* STEP 5: REAL OUTCOME REVEAL & GROUND-TRUTH VERDICT */}
           {matchRevealed && (
             <div className="w-full animate-fade-in">
 
-              {/* REAL FINAL SCOREBOARD */}
-              {selectedMatch.score && (
-                <div className="chalk-border p-6 bg-black/60 rounded-3xl mb-6 shadow-xl">
-                  <span className="text-xs uppercase font-mono text-white/60 tracking-wider block text-center mb-4">
-                    Official Box Score Result
-                  </span>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto font-mono">
-                    <div className={`p-4 rounded-2xl border text-center ${selectedMatch.score.team1Score > selectedMatch.score.team2Score
-                        ? "bg-amber-950/40 border-amber-500/50 text-amber-300"
-                        : "bg-black/40 border-white/10 text-white/70"
-                      }`}>
-                      <span className="text-sm font-bold block">{selectedMatch.team1Name}</span>
-                      <span className="text-4xl md:text-5xl font-black text-white mt-1 block">
-                        {selectedMatch.score.team1Score}
-                      </span>
-                      {selectedMatch.score.team1Score > selectedMatch.score.team2Score && (
-                        <span className="text-xs text-yellow-300 font-bold mt-1 inline-flex items-center gap-1">
-                          <Trophy size={14} /> WINNER
-                        </span>
-                      )}
-                    </div>
-
-                    <div className={`p-4 rounded-2xl border text-center ${selectedMatch.score.team2Score > selectedMatch.score.team1Score
-                        ? "bg-blue-950/40 border-blue-500/50 text-blue-300"
-                        : "bg-black/40 border-white/10 text-white/70"
-                      }`}>
-                      <span className="text-sm font-bold block">{selectedMatch.team2Name}</span>
-                      <span className="text-4xl md:text-5xl font-black text-white mt-1 block">
-                        {selectedMatch.score.team2Score}
-                      </span>
-                      {selectedMatch.score.team2Score > selectedMatch.score.team1Score && (
-                        <span className="text-xs text-yellow-300 font-bold mt-1 inline-flex items-center gap-1">
-                          <Trophy size={14} /> WINNER
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="text-center text-xs font-mono text-white/50 mt-4">
-                    Margin of Victory: {selectedMatch.score.scoreDiff} pts {selectedMatch.score.numOt > 0 ? `(${selectedMatch.score.numOt} Overtime)` : "(Regulation)"}
-                  </p>
-                </div>
-              )}
-
-              {/* Verdict Announcement Card (Step 5 Final Component) */}
-              <div
-                className={`p-6 md:p-8 rounded-3xl border-2 shadow-2xl mb-8 flex flex-col md:flex-row items-center justify-between gap-6 ${selectedMatch.correct
-                    ? "bg-emerald-950/70 border-emerald-400 text-emerald-300"
-                    : "bg-rose-950/70 border-rose-400 text-rose-300"
-                  }`}
-              >
-                <div className="flex items-center gap-4 text-left">
-                  <div className={`p-4 rounded-2xl ${selectedMatch.correct ? "bg-emerald-500/30 text-emerald-300" : "bg-rose-500/30 text-rose-300"}`}>
-                    {selectedMatch.correct ? <CheckCircle2 size={44} /> : <Flame size={44} />}
-                  </div>
-                  <div>
-                    <span className="text-xs uppercase font-mono tracking-widest font-bold block text-white/70">
-                      Step 5 &bull; Real Ground-Truth Match Outcome
-                    </span>
-                    <h3 className="text-2xl md:text-4xl font-extrabold text-white chalk-text mt-1">
-                      {selectedMatch.correct ? "MODEL PREDICTION WAS ACCURATE!" : "UNDERDOG UPSET OCCURRED!"}
-                    </h3>
-                    <p className="text-sm font-mono mt-1 text-white/90">
-                      Actual Game Winner: <strong className="text-yellow-300 text-base">{selectedMatch.actualWinner}</strong>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center md:items-end gap-2 shrink-0">
-                  <span
-                    className={`px-4 py-2 rounded-xl text-sm font-mono font-extrabold shadow-lg ${selectedMatch.correct
-                        ? "bg-emerald-500 text-black border border-emerald-200"
-                        : "bg-rose-500 text-white border border-rose-200"
-                      }`}
-                  >
-                    {selectedMatch.correct ? "✓ CORRECT PREDICTION" : "✗ MODEL MISS"}
-                  </span>
-                  <span className="text-xs font-mono text-white/60">
-                    Model assigned {(Math.max(selectedMatch.probTeam1, selectedMatch.probTeam2) * 100).toFixed(1)}% to {selectedMatch.predictedWinner}
-                  </span>
-                </div>
-              </div>
+              <MatchVerdict selectedMatch={selectedMatch} />
 
               {/* Pick Next Game Action */}
               {dayMatches.length > 1 && (
@@ -602,7 +463,7 @@ export default function MatchesAnalysisPage() {
                     }}
                     className="px-8 py-3.5 bg-amber-400 hover:bg-amber-300 text-black font-mono font-bold text-base rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-xl hover:scale-105"
                   >
-                    <span>Next Match on Day {selectedDay}</span>
+                    <span>Next Match on Day {selectedDay - 1}</span>
                     <ChevronRight size={20} />
                   </button>
                 </div>
@@ -611,7 +472,7 @@ export default function MatchesAnalysisPage() {
             </div>
           )}
 
-        </div>
+        </>
       )}
 
     </main>

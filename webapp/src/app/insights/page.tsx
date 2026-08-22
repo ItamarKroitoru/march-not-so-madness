@@ -193,7 +193,7 @@ export default function InsightsPage() {
           <div className="min-h-[30px] mb-3 flex items-center justify-between text-xs font-mono">
             {hoveredDay ? (
               <span className="text-amber-300 font-bold bg-white/10 px-3 py-1 rounded-lg border border-white/15">
-                Day {hoveredDay.dayNum}: {hoveredDay.correct} Correct, {hoveredDay.incorrect} Incorrect &bull; {hoveredDay.total} Total Games ({hoveredDay.accuracy}% Accuracy)
+                Day {hoveredDay.dayNum - 1}: {hoveredDay.correct} Correct, {hoveredDay.incorrect} Incorrect &bull; {hoveredDay.total} Total Games ({hoveredDay.accuracy}% Accuracy)
               </span>
             ) : (
               <span className="text-white/50 italic">Hover over any day bar below to inspect that day&apos;s results</span>

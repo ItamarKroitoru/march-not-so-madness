@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trophy, Swords, Calculator, Calendar, MapPin, TrendingUp, CheckCircle2, XCircle, Sparkles, ExternalLink } from "lucide-react";
+import { Trophy, Swords, Calculator, Calendar, MapPin, TrendingUp, CheckCircle2, XCircle, Sparkles, ExternalLink, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { TeamState, PredictionResult, MatchRecord } from "../../lib/types";
 
@@ -135,7 +135,7 @@ export default function MatchupPredictorPage() {
           </h1>
 
           <p className="text-lg md:text-xl chalk-text opacity-85 italic mt-3">
-            Historical &ldquo;What-If&rdquo; Matchup Predictor (2003 &ndash; 2026)
+            Historical &ldquo;What-If&rdquo; Matchup Predictor &bull; Seasons 2003 - 2026
           </p>
         </div>
 
@@ -149,9 +149,9 @@ export default function MatchupPredictorPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLocation(1)}
-              className={`px-5 py-2 text-sm font-bold rounded-xl transition-all cursor-pointer ${
+              className={`px-5 py-2 text-sm font-bold rounded-xl transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                 location === 1
-                  ? "bg-amber-500/90 text-black border border-amber-300 shadow-md"
+                  ? "bg-teal-500/90 text-white border border-teal-300 shadow-md"
                   : "bg-black/40 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -160,9 +160,9 @@ export default function MatchupPredictorPage() {
 
             <button
               onClick={() => setLocation(0)}
-              className={`px-5 py-2 text-sm font-bold rounded-xl transition-all cursor-pointer ${
+              className={`px-5 py-2 text-sm font-bold rounded-xl transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                 location === 0
-                  ? "bg-amber-500/90 text-black border border-amber-300 shadow-md"
+                  ? "bg-slate-500/90 text-white border border-slate-300 shadow-md"
                   : "bg-black/40 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -171,7 +171,7 @@ export default function MatchupPredictorPage() {
 
             <button
               onClick={() => setLocation(-1)}
-              className={`px-5 py-2 text-sm font-bold rounded-xl transition-all cursor-pointer ${
+              className={`px-5 py-2 text-sm font-bold rounded-xl transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                 location === -1
                   ? "bg-blue-500/90 text-white border border-blue-300 shadow-md"
                   : "bg-black/40 text-white/70 hover:bg-white/10"
@@ -185,21 +185,21 @@ export default function MatchupPredictorPage() {
         {/* Team & Season Selectors */}
         <div className="grid grid-cols-1 md:grid-cols-11 gap-5 md:gap-6 w-full items-center mb-10">
           
-          {/* TEAM 1 SELECTOR CARD (Light Orange / Amber) */}
-          <div className="md:col-span-5 bg-amber-950/30 border border-amber-500/30 p-6 md:p-7 rounded-3xl flex flex-col gap-5 shadow-xl">
-            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
-              <span className="text-xl md:text-2xl font-bold chalk-text text-amber-300 flex items-center gap-2.5">
-                <Trophy size={22} className="text-amber-400" />
-                Team 1 {location === 1 ? "(Home)" : location === -1 ? "(Away)" : "(Neutral)"}
+          {/* TEAM 1 SELECTOR CARD (Teal) */}
+          <div className="md:col-span-5 bg-teal-950/30 border border-teal-500/30 p-6 md:p-7 rounded-3xl flex flex-col gap-5 shadow-xl">
+            <div className="flex items-center justify-between border-b border-teal-500/20 pb-3">
+              <span className="text-xl md:text-2xl font-bold chalk-text text-teal-300 flex items-center gap-2.5">
+                <Trophy size={22} className="text-teal-400" />
+                Team 1
               </span>
 
               {/* Season Selector */}
               <div className="flex items-center gap-2 bg-black/50 border border-white/20 px-3 py-1.5 rounded-xl">
-                <Calendar size={16} className="text-amber-400" />
+                <Calendar size={16} className="text-teal-400" />
                 <select
                   value={season1}
                   onChange={(e) => setSeason1(Number(e.target.value))}
-                  className="bg-transparent text-sm font-mono font-bold text-amber-300 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-sm font-mono font-bold text-teal-300 focus:outline-none cursor-pointer"
                 >
                   {seasons.map((yr) => (
                     <option key={yr} value={yr} className="bg-slate-900 text-white">
@@ -211,12 +211,11 @@ export default function MatchupPredictorPage() {
             </div>
 
             {/* Team Dropdown */}
-            <div className="flex flex-col gap-2">
-              <label className="text-xs text-white/70 font-mono">Select Team 1 ({season1}):</label>
+            <div className="flex flex-col gap-2 relative">
               <select
                 value={team1Name}
                 onChange={(e) => setTeam1Name(e.target.value)}
-                className="chalk-input p-3.5 text-base md:text-lg font-semibold w-full cursor-pointer rounded-xl"
+                className="chalk-input appearance-none px-6 pr-12 py-3.5 text-base md:text-lg font-semibold w-full cursor-pointer rounded-xl"
               >
                 {teams1.map((team) => (
                   <option key={team.TeamID} value={team.TeamName} className="text-gray-900 bg-gray-100">
@@ -224,6 +223,9 @@ export default function MatchupPredictorPage() {
                   </option>
                 ))}
               </select>
+              <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-white/70">
+                <ChevronDown size={22} />
+              </div>
             </div>
 
             {/* Team 1 Quick Stats Preview */}
@@ -234,7 +236,7 @@ export default function MatchupPredictorPage() {
                 <div className="grid grid-cols-3 gap-3 bg-black/40 p-3 rounded-2xl border border-white/10 text-center font-mono">
                   <div>
                     <span className="text-white/50 block text-[11px]">Win %</span>
-                    <span className="font-bold text-amber-300 text-base">{(selected.team_win_pct * 100).toFixed(1)}%</span>
+                    <span className="font-bold text-teal-300 text-base">{(selected.team_win_pct * 100).toFixed(1)}%</span>
                   </div>
                   <div>
                     <span className="text-white/50 block text-[11px]">PPG</span>
@@ -261,7 +263,7 @@ export default function MatchupPredictorPage() {
             <div className="flex items-center justify-between border-b border-blue-500/20 pb-3">
               <span className="text-xl md:text-2xl font-bold chalk-text text-blue-300 flex items-center gap-2.5">
                 <Trophy size={22} className="text-blue-400" />
-                Team 2 {location === 1 ? "(Away)" : location === -1 ? "(Home)" : "(Neutral)"}
+                Team 2
               </span>
 
               {/* Season Selector */}
@@ -282,12 +284,11 @@ export default function MatchupPredictorPage() {
             </div>
 
             {/* Team Dropdown */}
-            <div className="flex flex-col gap-2">
-              <label className="text-xs text-white/70 font-mono">Select Team 2 ({season2}):</label>
+            <div className="flex flex-col gap-2 relative">
               <select
                 value={team2Name}
                 onChange={(e) => setTeam2Name(e.target.value)}
-                className="chalk-input p-3.5 text-base md:text-lg font-semibold w-full cursor-pointer rounded-xl"
+                className="chalk-input appearance-none px-6 pr-12 py-3.5 text-base md:text-lg font-semibold w-full cursor-pointer rounded-xl"
               >
                 {teams2.map((team) => (
                   <option key={team.TeamID} value={team.TeamName} className="text-gray-900 bg-gray-100">
@@ -295,6 +296,9 @@ export default function MatchupPredictorPage() {
                   </option>
                 ))}
               </select>
+              <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-white/70">
+                <ChevronDown size={22} />
+              </div>
             </div>
 
             {/* Team 2 Quick Stats Preview */}
