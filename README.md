@@ -1,4 +1,4 @@
-# March Not-So Madness 🏀 **[GitHub](https://github.com/ItamarKroitoru/march-not-so-madness)** 🏀 **[Live App](https://march-not-so-madness.vercel.app/)**
+# March Not-So Madness 🏀 **[GitHub](https://github.com/ItamarKroitoru/march-not-so-madness)** 🏀 **[Live App](https://march-not-so-madness.vercel.app/)** 🏀 **[Project Report](https://march-not-so-madness.vercel.app/final_report.pdf)**
 
 > **NCAA College Basketball Match Predictor**  
 > *HUJI Needle in a Haystack Course Final Project*
@@ -27,7 +27,7 @@ We've built an interactive web application to explore the model's predictions, s
 <details>
 <summary><h3>🌟 Features Overview</h3></summary>
 
-Our web application features three main interactive tools:
+Our web application features four main interactive tools:
 
 #### 🎮 1. The Simulator (`/simulator`)
 Watch our Machine Learning model predict real matches from the 2026 NCAA tournament! 
@@ -46,6 +46,11 @@ Look under the hood of our Machine Learning algorithm.
 - Explore the Logistic Regression feature weights.
 - Understand how factors like Win Percentage, PPG, and Elo impact the model.
 - View the model's overall historical accuracy.
+
+#### 📄 4. Project Report (`/report`)
+Read our full project report and methodology paper directly in the app.
+- Embedded interactive PDF viewer with quick navigation.
+- Direct download and open-in-tab options for the complete writeup.
 
 </details>
 
@@ -110,7 +115,7 @@ The notebook will automatically:
 
 Here are the most important files and folders if you want to poke around the code:
 
-- **`webapp/src/app/`**: Contains the main pages for the Web App (`/simulator`, `/what-if`, `/insights`).
+- **`webapp/src/app/`**: Contains the main pages for the Web App (`/simulator`, `/what-if`, `/insights`, `/report`).
 - **`webapp/src/components/`**: Reusable UI components (like the Match Simulation animations).
 - **`src/rating/team_rating_algorithm.py`**: The Python script that originally calculates team Elo ratings from raw Kaggle data.
 - **`src/notebooks/notebook_orchestrator.ipynb`**: Our Jupyter notebook orchestrator containing the feature engineering, model training, and evaluation pipeline.
